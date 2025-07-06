@@ -98,3 +98,4 @@ book-exchange-platform/
 ├── README.md                  # Project documentation
 └── database/
     └── book_exchange.sql      # Database schema dump
+"# CampusBookSwap" 
