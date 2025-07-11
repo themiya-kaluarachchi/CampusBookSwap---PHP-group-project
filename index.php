@@ -16,6 +16,9 @@ switch ($page) {
   case 'register':
     include 'views/auth/register.php';
     break;
+  case 'browse':
+    include 'views/books/browse.php';
+    break;
   default:
     include 'views/404.php';
     break;
