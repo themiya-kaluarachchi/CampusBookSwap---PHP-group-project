@@ -18,7 +18,7 @@
     <!-- Desktop Nav Links -->
     <div class="hidden md:flex space-x-6 items-center">
       <a href="index.php" class="text-gray-700 hover:text-blue-600">Home</a>
-      <a href="index.php?page=browse.php" class="text-gray-700 hover:text-blue-600">Browse</a>
+      <a href="index.php?page=browse" class="text-gray-700 hover:text-blue-600">Browse</a>
       <?php #if ($isLoggedIn): ?>
         <a href="index.php?page=mybooks.php" class="text-gray-700 hover:text-blue-600">My Books</a>
         <!-- <a href="index.php?page=logout.php" class="text-gray-700 hover:text-blue-600">Logout</a> -->
