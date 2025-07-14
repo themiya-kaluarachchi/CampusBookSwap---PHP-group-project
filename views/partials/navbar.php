@@ -19,6 +19,7 @@
     <div class="hidden md:flex space-x-6 items-center">
       <a href="index.php" class="text-gray-700 hover:text-blue-600">Home</a>
       <a href="index.php?page=browse" class="text-gray-700 hover:text-blue-600">Browse</a>
+      <a href="index.php?page=add_a_book" class="text-gray-700 hover:text-blue-600">Add a Book</a>
       <?php #if ($isLoggedIn): ?>
         <a href="index.php?page=mybooks.php" class="text-gray-700 hover:text-blue-600">My Books</a>
         <!-- <a href="index.php?page=logout.php" class="text-gray-700 hover:text-blue-600">Logout</a> -->

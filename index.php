@@ -19,6 +19,9 @@ switch ($page) {
   case 'browse':
     include 'views/books/browse.php';
     break;
+  case 'add_a_book':
+    include 'views/post/add_a_book.php';
+    break;
   default:
     include 'views/404.php';
     break;
