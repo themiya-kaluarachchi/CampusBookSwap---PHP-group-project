@@ -1,3 +1,5 @@
+</main>
+
     <!-- Footer -->
     <footer class="bg-slate-800 text-gray-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
