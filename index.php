@@ -13,11 +13,14 @@ switch ($page) {
   case 'login':
     include 'views/auth/login.php';  #in navbar <a href="index.php?page=login"
     break;
-  case 'register':
-    include 'views/auth/register.php';
+  case 'signup':
+    include 'views/auth/signup.php';
     break;
   case 'browse':
     include 'views/books/browse.php';
+    break;
+  case 'mybooks':
+    include 'views/books/mybooks.php';
     break;
   default:
     include 'views/404.php';
