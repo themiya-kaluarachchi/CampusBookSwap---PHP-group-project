@@ -97,4 +97,10 @@ book-exchange-platform/
 │
 ├── README.md                  # Project documentation
 └── database/
-    └── book_exchange.sql      # Database schema dump 
+|    └── book_exchange.sql      # Database schema dump 
+|
+|__.config.php     <?php
+                    define('DB_HOST', 'localhost');
+                    define('DB_USERNAME', 'root');
+                    define('DB_PASSWORD', 'Your Password');
+                    define('DB_NAME', 'bookSwaps');
