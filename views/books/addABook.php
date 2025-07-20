@@ -44,20 +44,10 @@
             for ($i = 0; $i < min(3, count($_FILES['images']['name'])); $i++) {
                 $tmpName = $_FILES['images']['tmp_name'][$i];
                 $name = basename($_FILES['images']['name'][$i]);
-                $size = $_FILES['images']['size'][$i];
-                $type = mime_content_type($tmpName);
-                $allowedTypes = ['image/jpeg', 'image/png'];
+                $sanitizedName = preg_replace('/[^a-zA-Z0-9.\-_]/', '_', $name); // Replace unsafe characters
+                $uniqueName = uniqid() . '-' . $sanitizedName;
+                $targetFile = $uploadDir . $uniqueName;
 
-                if ($size > 5 * 1024 * 1024 || !in_array($type, $allowedTypes)) {
-                    $errors[] = "Each image must be PNG or JPG and less than 5MB.";
-                    continue;
-                }
-
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir);
-                }
-
-                $targetFile = $uploadDir . time() . '-' . $name;
                 if (move_uploaded_file($tmpName, $targetFile)) {
                     $uploadedImages[] = $targetFile;
                 } else {
@@ -136,7 +126,6 @@
                                 Category *
                             </label>
                             <select name="category" id="category" required
-                                    value="<?= htmlspecialchars($oldInput['category'] ?? '') ?>"
                                     class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
                                     <option value="textbooks" <?= ($oldInput['category'] ?? '') == 'textbooks' ? 'selected' : '' ?>>Textbooks</option>
                                     <option value="literature" <?= ($oldInput['category'] ?? '') == 'literature' ? 'selected' : '' ?>>Literature</option>
@@ -150,7 +139,6 @@
                         <div class="space-y-2">
                             <label for="condition" class="block font-medium">Condition *</label>
                             <select name="condition" id="condition" required
-                                    value="<?= htmlspecialchars($oldInput['condition'] ?? '') ?>"
                                     class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
                             <option value="new" <?= ($oldInput['condition'] ?? '') == 'new' ? 'selected' : '' ?>>New</option>
                             <option value="like-new" <?= ($oldInput['condition'] ?? '') == 'like-new' ? 'selected' : '' ?>>Like New</option>
@@ -181,8 +169,9 @@
                         <label for="description" class="block font-medium">Description</label>
                         <textarea id="description" name="description" rows="4"
                                     placeholder="Describe the book's condition, any highlights, missing pages, etc."
-                                    value="<?= htmlspecialchars($oldInput['description'] ?? '') ?>"
-                                    class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400"></textarea>
+                                    class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
+                            <?= htmlspecialchars($oldInput['description'] ?? '') ?>
+                        </textarea>
                     </div>
 
                     <!-- Book Image Upload -->
@@ -208,7 +197,7 @@
                             <div id="imagePreview" class="hidden flex flex-wrap gap-2 mt-2"></div>
 
                             <!-- Hidden Input -->
-                            <input id="bookImages" type="file" name="images[]" multiple accept="image/*" class="hidden" />
+                            <input id="bookImages" type="file" name="images[]" multiple accept="image/*" required class="hidden" />
                         </label>
                     </div>
 
@@ -341,35 +330,69 @@
     const nextBtn = document.getElementById('nextBtn');
     let currentIndex = 0;
 
-    imageInput.addEventListener('change', function () {
-        const files = Array.from(this.files).slice(0, 3); // limit to 3 images
-        sliderTrack.innerHTML = ''; // clear previous
-        if (files.length === 0) {
-            sliderContainer.classList.add('hidden');
-            return;
-        }
+    document.getElementById('bookImages').addEventListener('change', function () {
+    const files = Array.from(this.files).slice(0, 3);
+    const previewContainer = document.getElementById('imagePreview');
+    const defaultContent = document.getElementById('uploadDefault');
+    const sliderTrack = document.getElementById('sliderTrack');
+    const sliderContainer = document.getElementById('imageSlider');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
 
-        files.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.className = 'w-full h-full object-contain flex-shrink-0';
-                sliderTrack.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
+    previewContainer.innerHTML = '';
+    sliderTrack.innerHTML = '';
 
-        sliderContainer.classList.remove('hidden');
-        prevBtn.classList.toggle('hidden', files.length <= 1);
-        nextBtn.classList.toggle('hidden', files.length <= 1);
-        currentIndex = 0;
-        updateSlider();
+    if (files.length > 3) {
+        alert('You can upload a maximum of 3 images.');
+        this.value = '';
+        previewContainer.classList.add('hidden');
+        defaultContent.classList.remove('hidden');
+        sliderContainer.classList.add('hidden');
+        return;
+    }
+
+    if (files.length === 0) {
+        previewContainer.classList.add('hidden');
+        defaultContent.classList.remove('hidden');
+        sliderContainer.classList.add('hidden');
+        return;
+    }
+
+    // Show both image preview and slider
+    previewContainer.classList.remove('hidden');
+    defaultContent.classList.add('hidden');
+    sliderContainer.classList.remove('hidden');
+    prevBtn.classList.toggle('hidden', files.length <= 1);
+    nextBtn.classList.toggle('hidden', files.length <= 1);
+
+    let index = 0;
+
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            // Preview (box)
+            const previewImg = document.createElement('img');
+            previewImg.src = e.target.result;
+            previewImg.classList.add('w-24', 'h-24', 'object-cover', 'rounded', 'shadow-sm', 'border');
+            previewContainer.appendChild(previewImg);
+
+            // Slider (live preview)
+            const sliderImg = document.createElement('img');
+            sliderImg.src = e.target.result;
+            sliderImg.className = 'w-full h-full object-contain flex-shrink-0';
+            sliderTrack.appendChild(sliderImg);
+        };
+        reader.readAsDataURL(file);
     });
 
-    function updateSlider() {
-        const slideWidth = sliderContainer.clientWidth;
-        sliderTrack.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+    currentIndex = 0;
+    updateSlider();
+});
+
+
+   function updateSlider() {
+        const slideWidth = document.getElementById('imageSlider').clientWidth;
+        document.getElementById('sliderTrack').style.transform = `translateX(-${currentIndex * slideWidth}px)`;
     }
 
     prevBtn.addEventListener('click', () => {
@@ -382,6 +405,7 @@
         currentIndex = Math.min(currentIndex + 1, total - 1);
         updateSlider();
     });
+
 
     // Text/inputs preview
     const inputs = ['title', 'author', 'category', 'condition', 'description', 'price', 'freeCheckbox'];
@@ -410,43 +434,5 @@
         }
     }
 
-    document.getElementById('bookImages').addEventListener('change', function () {
-        const maxFiles = 3;
-        const previewContainer = document.getElementById('imagePreview');
-        const defaultContent = document.getElementById('uploadDefault');
-
-        // Clear previous previews
-        previewContainer.innerHTML = '';
-
-        if (this.files.length > maxFiles) {
-            alert('You can upload a maximum of 3 images.');
-            this.value = '';
-            previewContainer.classList.add('hidden');
-            defaultContent.classList.remove('hidden');
-            return;
-        }
-
-        if (this.files.length === 0) {
-            previewContainer.classList.add('hidden');
-            defaultContent.classList.remove('hidden');
-            return;
-        }
-
-        // Show previews and hide default content
-        defaultContent.classList.add('hidden');
-        previewContainer.classList.remove('hidden');
-
-        Array.from(this.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.classList.add('w-24', 'h-24', 'object-cover', 'rounded', 'shadow-sm', 'border');
-
-                previewContainer.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
-    });
-
+    
 </script>
