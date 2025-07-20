@@ -1,3 +1,57 @@
+<?php
+    $errors = [];
+    $submitted = false;
+    $uploadDir = 'uploads/';
+    $uploadedImages = [];
+
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        // Basic validation
+        $title = trim($_POST['title'] ?? '');
+        $author = trim($_POST['author'] ?? '');
+        $category = $_POST['category'] ?? '';
+        $condition = $_POST['condition'] ?? '';
+        $isFree = isset($_POST['isFree']) ? true : false;
+        $price = $isFree ? 0 : trim($_POST['price'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+
+        if (!$title || !$author || !$category || !$condition || (!$isFree && !$price)) {
+            $errors[] = "Please fill all required fields.";
+        }
+
+        // Handle file upload (max 3)
+        if (isset($_FILES['images']) && count($_FILES['images']['name']) > 0) {
+            for ($i = 0; $i < min(3, count($_FILES['images']['name'])); $i++) {
+                $tmpName = $_FILES['images']['tmp_name'][$i];
+                $name = basename($_FILES['images']['name'][$i]);
+                $size = $_FILES['images']['size'][$i];
+                $type = mime_content_type($tmpName);
+                $allowedTypes = ['image/jpeg', 'image/png'];
+
+                if ($size > 5 * 1024 * 1024 || !in_array($type, $allowedTypes)) {
+                    $errors[] = "Each image must be PNG or JPG and less than 5MB.";
+                    continue;
+                }
+
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir);
+                }
+
+                $targetFile = $uploadDir . time() . '-' . $name;
+                if (move_uploaded_file($tmpName, $targetFile)) {
+                    $uploadedImages[] = $targetFile;
+                } else {
+                    $errors[] = "Failed to upload image: $name";
+                }
+            }
+        }
+
+        if (empty($errors)) {
+            $submitted = true;
+        }
+    }
+?>
+
+<!-- Content -->
 <div class="container mx-auto px-4 py-8 pt-24">
     <div class="max-w-6xl mx-auto">
         <div class="mb-8">
