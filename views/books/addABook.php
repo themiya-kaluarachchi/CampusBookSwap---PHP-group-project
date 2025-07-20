@@ -180,7 +180,6 @@
                     </ul>
                 </div>
             </div>
-            
         </div>
     </div>
 </div>
@@ -188,7 +187,7 @@
 
 
 <script>
-    
+
   // Price disable 
   const freeCheckbox = document.getElementById('freeCheckbox');
   const priceInput = document.getElementById('price');
