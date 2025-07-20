@@ -10,8 +10,9 @@
         </div>
 
         <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Left Column -->
             <!-- Book Form -->
-             <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+            <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
                 <h2 class="text-xl font-bold mb-4">
                     Book Details
                 </h2>
@@ -70,8 +71,8 @@
                         </div>
 
                         <div class="space-y-2">
-                            <label for="price" class="block font-medium">Price ($) *</label>
-                            <input type="number" id="price" name="price" step="0.01" placeholder="0.00"
+                            <label for="price" class="block font-medium">Price (Rs) *</label>
+                            <input type="text" id="price" name="price" step="0.01" placeholder="0.00"
                                 class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
                         </div>
                     </div>
@@ -105,7 +106,11 @@
                             <!-- Hidden Input -->
                             <input id="bookImages" type="file" name="images[]" multiple accept="image/*" class="hidden" />
                         </label>
+
+                        <!-- Preview Section -->
+                        <div id="preview" class="flex flex-wrap gap-2 mt-4"></div>
                     </div>
+                   
 
                     <!-- Submit Buttons -->
                     <div class="flex gap-4">
@@ -119,10 +124,49 @@
                         </button>
                     </div>
                 </form>
-             </div>
+            </div>
+
+            <!-- Right Column -->
+             <div class="space-y-6">
+                <!-- Live Preview -->
+
+                <!-- Tips Card -->
+                 <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+                    <h2 class="text-xl font-bold mb-4">Tips for Better Listings</h2>
+                    <ul class="list-disc list-inside space-y-2 text-sm text-gray-700 marker:text-blue-600">
+                        <li>Use clear, well-lit photos showing the book's condition</li>
+                        <li>Be honest about the condition and any damage</li>
+                        <li>Include edition number and ISBN if available</li>
+                        <li>Price competitively by checking similar listings</li>
+                    </ul>
+                </div>
+            </div>
+            
         </div>
     </div>
 </div>
 
 
 
+<script>
+  const input = document.getElementById('bookImages');
+  const preview = document.getElementById('preview');
+
+  input.addEventListener('change', () => {
+    preview.innerHTML = ''; // clear previous preview
+    const files = [...input.files].slice(0, 3); // allow only max 3
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = document.createElement('img');
+        img.src = reader.result;
+        img.className = 'w-24 h-24 object-cover rounded border border-gray-300 shadow-sm';
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  
+
+</script>
