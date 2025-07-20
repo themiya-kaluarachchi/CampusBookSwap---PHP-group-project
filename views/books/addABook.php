@@ -71,13 +71,14 @@
                 <h2 class="text-xl font-bold mb-4">
                     Book Details
                 </h2>
+                <!-- Form Start here -->
                 <form method="post" enctype="multipart/form-data" class="space-y-6">
                     <!-- Title -->
-                     <div class="space-y-2">
+                    <div class="space-y-2">
                         <label for="title" class="block font-medium">Book Title *</label>
                         <input type="text" id="title" name="title" required placeholder="Enter the book title"
                                class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
-                     </div>
+                    </div>
 
                     <!-- Author -->
                     <div class="space-y-2">
@@ -177,6 +178,37 @@
                         </button>
                     </div>
                 </form>
+
+                <!-- Validation Details -->
+                <?php if ($submitted): ?>
+                <div class="bg-green-100 text-green-800 p-4 rounded mt-6">
+                    <h3 class="font-bold text-lg mb-2">Book Listed Successfully!</h3>
+                    <ul class="text-sm space-y-1">
+                        <li><strong>Title:</strong> <?= htmlspecialchars($title) ?></li>
+                        <li><strong>Author:</strong> <?= htmlspecialchars($author) ?></li>
+                        <li><strong>Category:</strong> <?= htmlspecialchars($category) ?></li>
+                        <li><strong>Condition:</strong> <?= htmlspecialchars($condition) ?></li>
+                        <li><strong>Price:</strong> <?= $isFree ? 'Free' : 'Rs. ' . htmlspecialchars($price) ?></li>
+                        <li><strong>Description:</strong> <?= nl2br(htmlspecialchars($description)) ?></li>
+                    </ul>
+                    <?php if ($uploadedImages): ?>
+                        <div class="mt-4 flex gap-4">
+                            <?php foreach ($uploadedImages as $img): ?>
+                                <img src="<?= $img ?>" class="h-24 rounded border">
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <?php elseif (!empty($errors)): ?>
+                    <div class="bg-red-100 text-red-800 p-4 rounded mt-6">
+                        <h3 class="font-bold">There were some errors:</h3>
+                        <ul class="list-disc list-inside text-sm">
+                            <?php foreach ($errors as $err): ?>
+                                <li><?= $err ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <!-- Right Column -->
