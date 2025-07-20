@@ -1,6 +1,15 @@
 <?php
+    require_once __DIR__  . '/../config/db.php';
     include './config/book.php';
     $featuredBooks = array_slice($sampleBooks, 0, 4);
+
+    $conn = Database::getInstance()->getConnection();
+
+   /*  if($conn){
+      echo "<div class='alert alert-success mt-14 pt-14'>Database connection successful!</div>";
+    }else{
+      echo "<div class='alert alert-danger mt-14 pt-14'>Database connection failed!</div>";
+    } */
 ?>
 
 <div class="modern-homepage">
