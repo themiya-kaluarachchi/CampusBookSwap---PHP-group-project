@@ -189,25 +189,29 @@
                     <div class="space-y-2">
                         <label class="block font-medium text-sm">Book Images (Max 3)</label>
 
-                        <!-- Upload Box -->
+                        <!-- Upload Container -->
                         <label for="bookImages"
-                            class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-300 transition text-center px-4 py-6">
+                            id="uploadBox"
+                            class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-300 transition text-center px-4 py-6 relative overflow-auto">
 
-                            <!-- Lucide Upload Icon -->
-                            <i data-lucide="upload-cloud" class="w-10 h-10 text-gray-400 mb-2"></i>
+                            <!-- Default Content -->
+                            <div id="uploadDefault" class="flex flex-col items-center justify-center">
+                                <i data-lucide="upload-cloud" class="w-10 h-10 text-gray-400 mb-2"></i>
+                                <p class="text-gray-600 text-sm font-medium mb-1">Click to upload or drag and drop</p>
+                                <p class="text-xs text-gray-500 mb-4">PNG, JPG up to 5MB each</p>
+                                <span class="inline-block bg-white border border-gray-300 text-sm px-4 py-2 rounded shadow-sm hover:bg-gray-50">
+                                    Choose Files
+                                </span>
+                            </div>
 
-                            <p class="text-gray-600 text-sm font-medium mb-1">Click to upload or drag and drop</p>
-                            <p class="text-xs text-gray-500 mb-4">PNG, JPG up to 5MB each</p>
-
-                            <span class="inline-block bg-white border border-gray-300 text-sm px-4 py-2 rounded shadow-sm hover:bg-gray-50">
-                            Choose Files
-                            </span>
+                            <!-- Previews (initially empty/hidden) -->
+                            <div id="imagePreview" class="hidden flex flex-wrap gap-2 mt-2"></div>
 
                             <!-- Hidden Input -->
                             <input id="bookImages" type="file" name="images[]" multiple accept="image/*" class="hidden" />
                         </label>
-
                     </div>
+
                    
 
                     <!-- Submit Buttons -->
@@ -405,5 +409,44 @@
             previewPrice.innerHTML = `<span class="text-green-600 font-bold text-lg">Rs. ${priceVal}</span>`;
         }
     }
+
+    document.getElementById('bookImages').addEventListener('change', function () {
+        const maxFiles = 3;
+        const previewContainer = document.getElementById('imagePreview');
+        const defaultContent = document.getElementById('uploadDefault');
+
+        // Clear previous previews
+        previewContainer.innerHTML = '';
+
+        if (this.files.length > maxFiles) {
+            alert('You can upload a maximum of 3 images.');
+            this.value = '';
+            previewContainer.classList.add('hidden');
+            defaultContent.classList.remove('hidden');
+            return;
+        }
+
+        if (this.files.length === 0) {
+            previewContainer.classList.add('hidden');
+            defaultContent.classList.remove('hidden');
+            return;
+        }
+
+        // Show previews and hide default content
+        defaultContent.classList.add('hidden');
+        previewContainer.classList.remove('hidden');
+
+        Array.from(this.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.classList.add('w-24', 'h-24', 'object-cover', 'rounded', 'shadow-sm', 'border');
+
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
 
 </script>
