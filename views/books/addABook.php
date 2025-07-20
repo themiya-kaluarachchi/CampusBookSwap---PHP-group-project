@@ -9,6 +9,7 @@
             </p>
         </div>
 
+        
         <div class="grid lg:grid-cols-2 gap-8">
             <!-- Left Column -->
             <!-- Book Form -->
@@ -65,7 +66,7 @@
                     <!-- Donate or Price -->
                     <div class="space-y-4">
                         <div class="flex items-center space-x-2">
-                            <input type="checkbox" id="free" name="isFree" value="1"
+                            <input type="checkbox" id="freeCheckbox" name="isFree" value="1"
                                 class="accent-blue-500 h-4 w-4">
                             <label for="free" class="font-medium">Donate for free</label>
                         </div>
@@ -107,8 +108,6 @@
                             <input id="bookImages" type="file" name="images[]" multiple accept="image/*" class="hidden" />
                         </label>
 
-                        <!-- Preview Section -->
-                        <div id="preview" class="flex flex-wrap gap-2 mt-4"></div>
                     </div>
                    
 
@@ -129,9 +128,49 @@
             <!-- Right Column -->
              <div class="space-y-6">
                 <!-- Live Preview -->
+                <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+                    <h2 class="text-xl font-semibold mb-4">Live Preview</h2>
 
+                    <div id="imageSlider" class="w-full h-48 overflow-hidden relative bg-gray-50 border border-gray-200 rounded mb-4 hidden">
+                        <div id="sliderTrack" class="flex transition-transform duration-300 ease-in-out h-full">
+                            <!-- Images will be inserted here -->
+                        </div>
+
+                        <!-- Navigation buttons -->
+                        <!-- Previous Button -->
+                        <button id="prevBtn" type="button"
+                            class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-blue-200 rounded-full p-2 hover:bg-blue-400 transition-all duration-200 hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Next Button -->
+                        <button id="nextBtn" type="button"
+                            class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-blue-200 rounded-full p-2 hover:bg-blue-400 transition-all duration-200 hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+
+                    </div>
+
+                    
+                    <div class="text-sm inline-flex items-center px-2 py-1 rounded-full bg-gray-200 text-gray-800 mb-1" id="previewCategory">Category</div>
+
+                    <h3 class="text-lg font-bold" id="previewTitle">Title</h3>
+                    <p class="text-gray-600">by <span id="previewAuthor">Author</span></p>
+
+                    <div class="mt-2" id="previewPrice">Price</div>
+
+                    <div class="mt-1 px-2 py-1 text-xs bg-gray-300 inline-block rounded" id="previewCondition">Condition</div>
+
+                    <p class="mt-3 text-sm text-gray-700" id="previewDescription">Description</p>
+                </div>
                 <!-- Tips Card -->
-                 <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+                <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
                     <h2 class="text-xl font-bold mb-4">Tips for Better Listings</h2>
                     <ul class="list-disc list-inside space-y-2 text-sm text-gray-700 marker:text-blue-600">
                         <li>Use clear, well-lit photos showing the book's condition</li>
@@ -167,6 +206,85 @@
     });
   });
 
-  
+  function togglePriceInput(checkbox) {
+        document.getElementById('priceInput').style.display = checkbox.checked ? 'none' : 'block';
+    }
+
+    // Image preview
+    const imageInput = document.getElementById('bookImages');
+    const sliderTrack = document.getElementById('sliderTrack');
+    const sliderContainer = document.getElementById('imageSlider');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let currentIndex = 0;
+
+    imageInput.addEventListener('change', function () {
+        const files = Array.from(this.files).slice(0, 3); // limit to 3 images
+        sliderTrack.innerHTML = ''; // clear previous
+        if (files.length === 0) {
+            sliderContainer.classList.add('hidden');
+            return;
+        }
+
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'w-full h-full object-contain flex-shrink-0';
+                sliderTrack.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        sliderContainer.classList.remove('hidden');
+        prevBtn.classList.toggle('hidden', files.length <= 1);
+        nextBtn.classList.toggle('hidden', files.length <= 1);
+        currentIndex = 0;
+        updateSlider();
+    });
+
+    function updateSlider() {
+        const slideWidth = sliderContainer.clientWidth;
+        sliderTrack.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+        currentIndex = Math.max(currentIndex - 1, 0);
+        updateSlider();
+    });
+
+    nextBtn.addEventListener('click', () => {
+        const total = sliderTrack.children.length;
+        currentIndex = Math.min(currentIndex + 1, total - 1);
+        updateSlider();
+    });
+
+    // Text/inputs preview
+    const inputs = ['title', 'author', 'category', 'condition', 'description', 'price', 'freeCheckbox'];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', updatePreview);
+            el.addEventListener('change', updatePreview);
+        }
+    });
+
+    function updatePreview() {
+        document.getElementById('previewTitle').innerText = document.getElementById('title').value;
+        document.getElementById('previewAuthor').innerText = document.getElementById('author').value;
+        document.getElementById('previewCategory').innerText = document.getElementById('category').value;
+        document.getElementById('previewCondition').innerText = document.getElementById('condition').value;
+        document.getElementById('previewDescription').innerText = document.getElementById('description').value;
+
+        const isFree = document.getElementById('freeCheckbox').checked;
+        const previewPrice = document.getElementById('previewPrice');
+        if (isFree) {
+            previewPrice.innerHTML = `<span class="text-blue-600 font-bold text-lg">FREE</span>`;
+        } else {
+            const priceVal = document.getElementById('price').value;
+            previewPrice.innerHTML = `<span class="text-green-600 font-bold text-lg">Rs. ${priceVal}</span>`;
+        }
+    }
 
 </script>
