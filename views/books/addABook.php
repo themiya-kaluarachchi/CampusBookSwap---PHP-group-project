@@ -188,22 +188,21 @@
 
 
 <script>
-  const input = document.getElementById('bookImages');
-  const preview = document.getElementById('preview');
+    
+  // Price disable 
+  const freeCheckbox = document.getElementById('freeCheckbox');
+  const priceInput = document.getElementById('price');
 
-  input.addEventListener('change', () => {
-    preview.innerHTML = ''; // clear previous preview
-    const files = [...input.files].slice(0, 3); // allow only max 3
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = document.createElement('img');
-        img.src = reader.result;
-        img.className = 'w-24 h-24 object-cover rounded border border-gray-300 shadow-sm';
-        preview.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    });
+  freeCheckbox.addEventListener('change', () => {
+    if (freeCheckbox.checked) {
+      priceInput.disabled = true;
+      priceInput.value = ''; 
+      priceInput.classList.add('bg-gray-100', 'cursor-not-allowed'); 
+    } else {
+      priceInput.disabled = false;
+      priceInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
+    }
+    updatePreview(); // update live preview if needed
   });
 
   function togglePriceInput(checkbox) {
