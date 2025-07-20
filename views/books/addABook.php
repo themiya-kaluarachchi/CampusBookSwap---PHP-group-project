@@ -1,8 +1,29 @@
 <?php
+    session_start();
+
     $errors = [];
     $submitted = false;
     $uploadDir = 'uploads/';
     $uploadedImages = [];
+    $submittedData = [];
+    $oldInput = [];
+
+    if (isset($_SESSION['form_errors'])) {
+        $errors = $_SESSION['form_errors'];
+        unset($_SESSION['form_errors']);
+    }
+
+    if (isset($_SESSION['old_input'])) {
+        $oldInput = $_SESSION['old_input'];
+        unset($_SESSION['old_input']);
+    }
+
+    if (isset($_SESSION['book_submitted'])) {
+        $submitted = true;
+        $submittedData = $_SESSION['submitted_data'];
+        unset($_SESSION['book_submitted']);
+        unset($_SESSION['submitted_data']);
+    }
 
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Basic validation
@@ -46,9 +67,28 @@
         }
 
         if (empty($errors)) {
-            $submitted = true;
+            $_SESSION['book_submitted'] = true;
+            $_SESSION['submitted_data'] = [
+                'title' => $title,
+                'author' => $author,
+                'category' => $category,
+                'condition' => $condition,
+                'price' => $price,
+                'isFree' => $isFree,
+                'description' => $description,
+                'images' => $uploadedImages
+            ];
+            header("Location: " . $_SERVER['REQUEST_URI']);
+            exit;
+        }
+        if (!empty($errors)) {
+            $_SESSION['form_errors'] = $errors;
+            $_SESSION['old_input'] = $_POST;
+            header("Location: " . $_SERVER['REQUEST_URI']);
+            exit;
         }
     }
+    
 ?>
 
 <!-- Content -->
@@ -77,6 +117,7 @@
                     <div class="space-y-2">
                         <label for="title" class="block font-medium">Book Title *</label>
                         <input type="text" id="title" name="title" required placeholder="Enter the book title"
+                               value="<?= htmlspecialchars($oldInput['title'] ?? '') ?>"
                                class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
                     </div>
 
@@ -84,6 +125,7 @@
                     <div class="space-y-2">
                         <label for="author" class="block font-medium">Author *</label>
                         <input type="text" id="author" name="author" required placeholder="Enter the author's name"
+                               value="<?= htmlspecialchars($oldInput['author'] ?? '') ?>"
                                class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
                      </div>
 
@@ -94,26 +136,26 @@
                                 Category *
                             </label>
                             <select name="category" id="category" required
+                                    value="<?= htmlspecialchars($oldInput['category'] ?? '') ?>"
                                     class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
-                                <option value="">Select category</option>
-                                    <option value="textbooks">Textbooks</option>
-                                    <option value="literature">Literature</option>
-                                    <option value="science">Science</option>
-                                    <option value="tech">Technology</option>
-                                    <option value="math">Mathematics</option>
-                                    <option value="history">History</option>
-                                    <option value="other">Other</option> 
+                                    <option value="textbooks" <?= ($oldInput['category'] ?? '') == 'textbooks' ? 'selected' : '' ?>>Textbooks</option>
+                                    <option value="literature" <?= ($oldInput['category'] ?? '') == 'literature' ? 'selected' : '' ?>>Literature</option>
+                                    <option value="science" <?= ($oldInput['category'] ?? '') == 'science' ? 'selected' : '' ?>>Science</option>
+                                    <option value="tech" <?= ($oldInput['category'] ?? '') == 'tech' ? 'selected' : '' ?>>Technology</option>
+                                    <option value="math" <?= ($oldInput['category'] ?? '') == 'math' ? 'selected' : '' ?>>Mathematics</option>
+                                    <option value="history" <?= ($oldInput['category'] ?? '') == 'history' ? 'selected' : '' ?>>History</option>
+                                    <option value="other" <?= ($oldInput['category'] ?? '') == 'other' ? 'selected' : '' ?>>Other</option>
                             </select>
                         </div>
                         <div class="space-y-2">
                             <label for="condition" class="block font-medium">Condition *</label>
                             <select name="condition" id="condition" required
+                                    value="<?= htmlspecialchars($oldInput['condition'] ?? '') ?>"
                                     class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
-                            <option value="">Select condition</option>
-                            <option value="new">New</option>
-                            <option value="like-new">Like New</option>
-                            <option value="used">Used</option>
-                            <option value="poor">Poor</option>
+                            <option value="new" <?= ($oldInput['condition'] ?? '') == 'new' ? 'selected' : '' ?>>New</option>
+                            <option value="like-new" <?= ($oldInput['condition'] ?? '') == 'like-new' ? 'selected' : '' ?>>Like New</option>
+                            <option value="used" <?= ($oldInput['condition'] ?? '') == 'used' ? 'selected' : '' ?>>Used</option>
+                            <option value="poor" <?= ($oldInput['condition'] ?? '') == 'poor' ? 'selected' : '' ?>>Poor</option>
                             </select>
                         </div>
                     </div>
@@ -121,15 +163,16 @@
                     <!-- Donate or Price -->
                     <div class="space-y-4">
                         <div class="flex items-center space-x-2">
-                            <input type="checkbox" id="freeCheckbox" name="isFree" value="1"
-                                class="accent-blue-500 h-4 w-4">
+                            <input type="checkbox" id="freeCheckbox" name="isFree" value="1"  <?= isset($oldInput['isFree']) ? 'checked' : '' ?>
+                                class="accent-blue-500 h-4 w-4" >
                             <label for="free" class="font-medium">Donate for free</label>
                         </div>
 
                         <div class="space-y-2">
                             <label for="price" class="block font-medium">Price (Rs) *</label>
-                            <input type="text" id="price" name="price" step="0.01" placeholder="0.00"
-                                class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
+                            <input type="number" id="price" name="price" step="0.01" placeholder="0.00"
+                                   value="<?= htmlspecialchars($oldInput['price'] ?? '') ?>"
+                                   class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
                         </div>
                     </div>
 
@@ -138,6 +181,7 @@
                         <label for="description" class="block font-medium">Description</label>
                         <textarea id="description" name="description" rows="4"
                                     placeholder="Describe the book's condition, any highlights, missing pages, etc."
+                                    value="<?= htmlspecialchars($oldInput['description'] ?? '') ?>"
                                     class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400"></textarea>
                     </div>
 
@@ -184,30 +228,21 @@
                 <div class="bg-green-100 text-green-800 p-4 rounded mt-6">
                     <h3 class="font-bold text-lg mb-2">Book Listed Successfully!</h3>
                     <ul class="text-sm space-y-1">
-                        <li><strong>Title:</strong> <?= htmlspecialchars($title) ?></li>
-                        <li><strong>Author:</strong> <?= htmlspecialchars($author) ?></li>
-                        <li><strong>Category:</strong> <?= htmlspecialchars($category) ?></li>
-                        <li><strong>Condition:</strong> <?= htmlspecialchars($condition) ?></li>
-                        <li><strong>Price:</strong> <?= $isFree ? 'Free' : 'Rs. ' . htmlspecialchars($price) ?></li>
-                        <li><strong>Description:</strong> <?= nl2br(htmlspecialchars($description)) ?></li>
+                        <li><strong>Title:</strong> <?= htmlspecialchars($submittedData['title']) ?></li>
+                        <li><strong>Author:</strong> <?= htmlspecialchars($submittedData['author']) ?></li>
+                        <li><strong>Category:</strong> <?= htmlspecialchars($submittedData['category']) ?></li>
+                        <li><strong>Condition:</strong> <?= htmlspecialchars($submittedData['condition']) ?></li>
+                        <li><strong>Price:</strong> <?= $submittedData['isFree'] ? 'Free' : 'Rs. ' . htmlspecialchars($submittedData['price']) ?></li>
+                        <li><strong>Description:</strong> <?= nl2br(htmlspecialchars($submittedData['description'])) ?></li>
                     </ul>
-                    <?php if ($uploadedImages): ?>
+                    <?php if (!empty($submittedData['images'])): ?>
                         <div class="mt-4 flex gap-4">
-                            <?php foreach ($uploadedImages as $img): ?>
-                                <img src="<?= $img ?>" class="h-24 rounded border">
+                            <?php foreach ($submittedData['images'] as $img): ?>
+                                <img src="<?= htmlspecialchars($img) ?>" class="h-24 rounded border">
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
                 </div>
-                <?php elseif (!empty($errors)): ?>
-                    <div class="bg-red-100 text-red-800 p-4 rounded mt-6">
-                        <h3 class="font-bold">There were some errors:</h3>
-                        <ul class="list-disc list-inside text-sm">
-                            <?php foreach ($errors as $err): ?>
-                                <li><?= $err ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
                 <?php endif; ?>
             </div>
 
