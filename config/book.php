@@ -1,6 +1,7 @@
 <?php
   $sampleBooks = [
     [
+      'id'=>1,
       'title' => 'Introduction to Algorithms',
       'author' => 'Thomas H. Cormen',
       'price' => 45,
@@ -11,6 +12,7 @@
       'user_name' => 'Sarah M.'
     ],
     [
+      'id'=>2,
       'title' => 'Clean Code',
       'author' => 'Robert C. Martin',
       'price' => 30,
@@ -21,6 +23,7 @@
       'user_name' => 'James L.'
     ],
     [
+      'id'=>3,
       'title' => 'The Great Gatsby',
       'author' => 'F. Scott Fitzgerald',
       'price' => 10,
@@ -31,6 +34,7 @@
       'user_name' => 'Emily R.'
     ],
     [
+      'id'=>4,
       'title' => 'Physics for Scientists and Engineers',
       'author' => 'Raymond A. Serway',
       'price' => 50,
@@ -41,6 +45,7 @@
       'user_name' => 'Nikhil P.'
     ],
     [
+      'id'=>5,
       'title' => 'To Kill a Mockingbird',
       'author' => 'Harper Lee',
       'price' => 12,
@@ -51,6 +56,7 @@
       'user_name' => 'Ayesha K.'
     ],
     [
+      'id'=>6,
       'title' => 'Artificial Intelligence: A Modern Approach',
       'author' => 'Stuart Russell',
       'price' => 60,
@@ -61,6 +67,7 @@
       'user_name' => 'Daniel S.'
     ],
     [
+      'id'=>7,
       'title' => 'Head First Design Patterns',
       'author' => 'Eric Freeman',
       'price' => 28,
@@ -71,6 +78,7 @@
       'user_name' => 'Rachel B.'
     ],
     [
+      'id'=>8,
       'title' => 'Organic Chemistry',
       'author' => 'Paula Yurkanis Bruice',
       'price' => 40,
@@ -81,6 +89,7 @@
       'user_name' => 'Kevin T.'
     ],
     [
+      'id'=>9,
       'title' => 'Economics',
       'author' => 'Paul Krugman',
       'price' => 25,
@@ -91,6 +100,7 @@
       'user_name' => 'Priya S.'
     ],
     [
+      'id'=>10,
       'title' => 'Modern Control Engineering',
       'author' => 'Ogata Katsuhiko',
       'price' => 35,
