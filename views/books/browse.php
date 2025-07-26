@@ -119,41 +119,43 @@
             </div>
 
             <!-- Book Info -->
-            <div class="p-6 space-y-4">
-              <div class="flex items-center justify-between">
-                <span class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                  <?= htmlspecialchars($book['category']) ?>
-                </span>
-                <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                  <?= htmlspecialchars($book['condition']) ?>
-                </span>
-              </div>
-              
-              <h3 class="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-2">
-                <?= htmlspecialchars($book['title']) ?>
-              </h3>
-              
-              <p class="text-slate-600 font-medium"><?= htmlspecialchars($book['author']) ?></p>
-              
-              <div class="flex items-center justify-between pt-4 border-t border-slate-100">
-                <div class="text-2xl font-black text-blue-600">
-                  $<?= htmlspecialchars($book['price'] ?? '45') ?>
+            <a href="index.php?page=book_details&id=<?= htmlspecialchars($book['id']) ?>">
+              <div class="p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                    <?= htmlspecialchars($book['category']) ?>
+                  </span>
+                  <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                    <?= htmlspecialchars($book['condition']) ?>
+                  </span>
                 </div>
-                <div class="text-sm text-slate-500 font-medium">
-                  by <?= htmlspecialchars($book['user_name'] ?? 'Sarah M.') ?>
+              
+                <h3 class="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-2">
+                  <?= htmlspecialchars($book['title']) ?>
+                </h3>
+              
+                <p class="text-slate-600 font-medium"><?= htmlspecialchars($book['author']) ?></p>
+              
+                <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                  <div class="text-2xl font-black text-blue-600">
+                    $<?= htmlspecialchars($book['price'] ?? '45') ?>
+                  </div>
+                  <div class="text-sm text-slate-500 font-medium">
+                    by <?= htmlspecialchars($book['user_name'] ?? 'Sarah M.') ?>
+                  </div>
                 </div>
-              </div>
 
-              <!-- Action Buttons -->
-              <!-- <div class="flex space-x-3 pt-4">
-                <button class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                  View Details
-                </button>
-                <button class="bg-slate-200 text-slate-700 py-2 px-4 rounded-lg font-medium hover:bg-slate-300 transition-colors">
-                  <i data-lucide="message-circle" class="w-4 h-4"></i>
-                </button>
-              </div> -->
-            </div>
+                <!-- Action Buttons -->
+                <!-- <div class="flex space-x-3 pt-4">
+                  <button class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                    View Details
+                  </button>
+                  <button class="bg-slate-200 text-slate-700 py-2 px-4 rounded-lg font-medium hover:bg-slate-300 transition-colors">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                  </button>
+                </div> -->
+              </div>
+            </a>
           </div>
         <?php endforeach; ?>
       </div>
