@@ -39,7 +39,7 @@
                 </button>
             </div>
 
-            <!-- Confirm Password -->
+            <!-- Confirm Password 
             <div class="relative password-field">
                 <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirm Password</label>
                 <input id="confirm_password" name="confirm_password" type="password" autocomplete="current-password" required
@@ -57,7 +57,7 @@
                     <path d="M17.94 17.94A10.94 10.94 0 0112 19c-4.478 0-8.269-2.943-9.543-7a10.954 10.954 0 013.158-4.568M6.12 6.12A10.94 10.94 0 0112 5c4.478 0 8.269 2.943 9.543 7a10.952 10.952 0 01-1.611 2.568M15 12a3 3 0 00-3-3m0 0a3 3 0 013 3m-3 0a3 3 0 003 3M3 3l18 18" />
                     </svg>
                 </button>
-            </div>
+            </div>-->
 
             <!-- Remember Me and Forgot Password -->
             <div class="flex items-center justify-between">
