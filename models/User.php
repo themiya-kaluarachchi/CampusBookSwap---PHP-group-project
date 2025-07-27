@@ -74,5 +74,13 @@ class User {
 
         return $stmt->execute();
     }
+
+    //delete user by id
+    public function deleteById($id) {
+        $stmt = $this->conn->prepare("DELETE FROM users WHERE id = ?");
+        $stmt->bind_param('i', $id);
+        return $stmt->execute();
+    }
+
 }
 ?>
