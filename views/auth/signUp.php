@@ -11,7 +11,7 @@
           <p class="text-sm text-gray-700 text-center">Sign Up for new account to continue swapping books</p>
         </div>
 
-        <form class="space-y-6 mt-4" id="signupForm" action='<?= BASE_URL ?>/login' method='POST'>
+        <form class="space-y-6 mt-4" id="signupForm"  action="<?= BASE_URL ?>/signup" method="POST">
 
             <!--first name-->
             <div>
@@ -103,7 +103,7 @@
             </div>
         </form>
 
-        <div id="response" style="margin-top: 10px; color: red;"></div>
+        <div id="response" class="text-center py-2 text-sm font-semibold transition duration-200"></div>
 
         <!-- sign in Link -->
         <div class="mt-6 text-center">
@@ -122,80 +122,65 @@
     jQuery.noConflict();
 
     jQuery(document).ready(function () {
-
+        // Toggle password visibility
         jQuery('.eye-btn').click(function () {
-
-            var container = jQuery(this).closest('.password-field');
-
+            const container = jQuery(this).closest('.password-field');
             container.find('.eye-icon').toggleClass('hidden');
             container.find('.eye-off-icon').toggleClass('hidden');
 
-            var inputField = container.find('input');
-            if(inputField.attr('type')==='password'){
-                inputField.attr('type','text');
-            }else{
-                inputField.attr('type','password');
-            }
+            const input = container.find('input');
+            input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
         });
-        /* jQuery('#signupForm').on('submit', function (e) {
-            e.preventDefault();
-
-            const form = document.getElementById('signupForm');
-            const formData = new FormData(form);
-
-            jQuery.ajax({
-                url: BASE_URL + "/signup",
-                type: "POST",
-                data: formData,
-                contentType: false,
-                processData: false,
-                dataType: "json",
-                success: function (res) {
-                jQuery('#response').text(res.message);
-                if (res.success) {
-                    form.reset();
-                    setTimeout(() => {
-                    window.location.href = "<?= BASE_URL ?>/login";
-                    }, 1500);
-                }
-                },
-                error: function (xhr, status, error) {
-                jQuery('#response').text("Server error or invalid response.");
-                console.error("AJAX Error:", error);
-                }
-            });
-        }); */
     });
+    
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
 
-  
-   /*  document.getElementById('signupForm').addEventListener('submit', function (e) {
-    e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const responseBox = document.getElementById('response');
 
-    const form = e.target;
-    const formData = new FormData(form);
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '<?= BASE_URL ?>/signup', true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "<?= BASE_URL ?>/signup", true);
-
-    xhr.onload = function () {
+        xhr.onload = function () {
         if (xhr.status === 200) {
-        try {
+            try {
             const res = JSON.parse(xhr.responseText);
-            document.getElementById('response').innerText = res.message;
-            if (res.success){
-                 form.reset();
-                 setTimeout(() => window.location.href = "<?= BASE_URL ?>/login", 1500);
-                }
-        } catch (e) {
-            document.getElementById('response').innerText = "Invalid response.";
-            error_log("Method: " . $_SERVER['REQUEST_METHOD']);
-            console.error(e);
-        }
-        } else {
-        document.getElementById('response').innerText = "Server error.";
-        }
-    };
-    xhr.send(formData);
-    }); */
+            responseBox.textContent = res.message;
+            setTimeout(() => {
+                responseBox.textContent = "";
+            }, 1500);
 
+            if (res.success) {
+                responseBox.style.color = 'green';
+                form.reset();
+
+                // Redirect after 1.5 seconds
+                setTimeout(() => {
+                window.location.href = '<?= BASE_URL ?>/login';
+                }, 1500);
+            } else {
+                responseBox.style.color = 'red';
+            }
+            } catch (error) {
+            console.error('Parsing error:', error, xhr.responseText);
+            responseBox.textContent = 'Invalid server response.';
+            responseBox.style.color = 'red';
+            }
+        } else {
+            responseBox.textContent = 'Server error.';
+            responseBox.style.color = 'red';
+        }
+        };
+
+        xhr.onerror = function () {
+        responseBox.textContent = 'Request failed.';
+        responseBox.style.color = 'red';
+        };
+
+        xhr.send(formData);
+    });
 </script>
+

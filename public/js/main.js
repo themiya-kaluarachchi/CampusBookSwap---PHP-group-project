@@ -9,3 +9,6 @@ setInterval(() => {
   document.getElementById('hero-bg-image').src= hero_image[current];
   current = (current + 1) % hero_image.length;
 }, 5000);
+
+  
+
