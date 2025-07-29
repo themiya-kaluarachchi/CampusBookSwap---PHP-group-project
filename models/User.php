@@ -82,5 +82,22 @@ class User {
         return $stmt->execute();
     }
 
+    //check the email is exists
+    public function emailExists($email) {
+        $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ?");
+        
+        if (!$stmt) {
+            // Output MySQL error and stop
+            die("Prepare failed: (" . $this->conn->errno . ") " . $this->conn->error);
+        }
+
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+
+        return $stmt->num_rows > 0;
+}
+
+
 }
 ?>

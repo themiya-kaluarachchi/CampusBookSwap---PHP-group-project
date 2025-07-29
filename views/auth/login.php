@@ -11,18 +11,18 @@
           <p class="text-sm text-gray-700 text-center">Sign in to your account to continue swapping books</p>
         </div>
 
-        <form class="space-y-6 mt-4">
+        <form class="space-y-6 mt-4" action="<?= BASE_URL ?>/login" method="POST">
             <!-- Email address -->
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-                <input id="email" type="text" required
+                <input id="email" type="text" required name="email"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
 
             <!-- Password -->
             <div class="relative password-field">
                 <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input id="password" name="password" type="password" autocomplete="current-password" required
+                <input id="password" name="password" type="password" autocomplete="current-password" required name="password"
                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 <button type="button"
                     class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 top-6 eye-btn" aria-label="Toggle Password Visibility">

@@ -9,7 +9,7 @@
     <nav class="bg-white shadow-md fixed w-full z-50 md:h-16">
       <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         <!-- Logo -->
-        <a href="index.php" class="text-xl font-bold text-blue-600 flex items-center gap-2">
+        <a href="<?= BASE_URL ?>/" class="text-xl font-bold text-blue-600 flex items-center gap-2">
           <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
             <i data-lucide="book-open" class="w-5 h-5 text-white"></i>
           </div>
@@ -18,16 +18,16 @@
 
         <!-- Desktop Nav Links -->
         <div class="hidden md:flex space-x-6 items-center">
-          <a href="index.php" class="text-gray-700 hover:text-blue-600">Home</a>
-          <a href="index.php?page=browse" class="text-gray-700 hover:text-blue-600">Browse</a>
-          <a href="index.php?page=add_a_book" class="text-gray-700 hover:text-blue-600">Add a Book</a>
+          <a href="<?= BASE_URL ?>/" class="text-gray-700 hover:text-blue-600">Home</a>
+          <a href="<?= BASE_URL ?>/browse" class="text-gray-700 hover:text-blue-600">Browse</a>
+          <a href="<?= BASE_URL ?>/add_a_book" class="text-gray-700 hover:text-blue-600">Add a Book</a>
 
           <?php if (isset($isLoggedIn) && $isLoggedIn): ?>
-            <a href="index.php?page=mybooks" class="text-gray-700 hover:text-blue-600">My Books</a>
-            <a href="index.php?page=logout" class="text-gray-700 hover:text-red-600">Logout</a>
+            <a href="<?= BASE_URL ?>/mybooks" class="text-gray-700 hover:text-blue-600">My Books</a>
+            <a href="<?= BASE_URL ?>/logout" class="text-gray-700 hover:text-red-600">Logout</a>
           <?php else: ?>
-            <a href="index.php?page=login" class="text-gray-700 hover:text-blue-600 border border-blue-600 text-blue-600 px-4 py-2 rounded">Login</a>
-            <a href="index.php?page=signup" class="text-white bg-blue-600 hover:bg-blue-800 px-4 py-2 rounded">Sign Up</a>
+            <a href="<?= BASE_URL ?>/login" class="text-gray-700 hover:text-blue-600 border border-blue-600 text-blue-600 px-4 py-2 rounded">Login</a>
+            <a href="<?= BASE_URL ?>/signup" class="text-white bg-blue-600 hover:bg-blue-800 px-4 py-2 rounded">Sign Up</a>
           <?php endif; ?>
         </div>
 
@@ -42,17 +42,17 @@
 
       <!-- Mobile Menu -->
       <div id="mobile-menu" class="md:hidden hidden px-4 pb-4 transition-all duration-300 ease-in-out">
-        <a href="index.php" class="block py-2 text-gray-700 hover:text-blue-600">Home</a>
-        <a href="index.php?page=browse" class="block py-2 text-gray-700 hover:text-blue-600">Browse</a>
-        <a href="index.php?page=add_a_book" class="block py-2 text-gray-700 hover:text-blue-600">Add a Book</a>
+        <a href="<?= BASE_URL ?>" class="block py-2 text-gray-700 hover:text-blue-600">Home</a>
+        <a href="<?= BASE_URL ?>/browse" class="block py-2 text-gray-700 hover:text-blue-600">Browse</a>
+        <a href="<?= BASE_URL ?>/add_a_book" class="block py-2 text-gray-700 hover:text-blue-600">Add a Book</a>
 
         <?php if (isset($isLoggedIn) && $isLoggedIn): ?>
-          <a href="index.php?page=mybooks" class="block py-2 text-gray-700 hover:text-blue-600">My Books</a>
-          <a href="index.php?page=logout" class="block py-2 text-red-600 hover:text-red-800">Logout</a>
+          <a href="<?= BASE_URL ?>/mybooks" class="block py-2 text-gray-700 hover:text-blue-600">My Books</a>
+          <a href="<?= BASE_URL ?>/logout" class="block py-2 text-red-600 hover:text-red-800">Logout</a>
         <?php else: ?>
           <hr class="my-2 border-gray-300">
-          <a href="index.php?page=login" class="block py-2 border border-blue-600 text-blue-600 text-center rounded mb-2 hover:bg-blue-50">Login</a>
-          <a href="index.php?page=signup" class="block py-2 bg-blue-600 text-white text-center rounded hover:bg-blue-700">Sign Up</a>
+          <a href="<?= BASE_URL ?>/login" class="block py-2 border border-blue-600 text-blue-600 text-center rounded mb-2 hover:bg-blue-50">Login</a>
+          <a href="<?= BASE_URL ?>/signup" class="block py-2 bg-blue-600 text-white text-center rounded hover:bg-blue-700">Sign Up</a>
         <?php endif; ?>
       </div>
     </nav>
