@@ -76,7 +76,11 @@ class AuthController {
 
     // Login
     public function login() {
+          $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            header('Content-Type: application/json');
             $email = $_POST['email'];
             $password = $_POST['password'];
 
@@ -84,14 +88,20 @@ class AuthController {
             if ($user) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['fname'] = $user['fname'];
-                header('Location: ' . BASE_URL . '/');
+                echo json_encode(['success' => true, 'message' => 'Login successful.']);
+
                 exit;
             } else {
-                echo 'Invalid email or password.';
+                 echo json_encode(['success' => false, 'message' => 'Invalid email or password.']);
             }
-        } else {
+            exit;
+        }
+
+        // Show HTML form on GET (non-AJAX)
+        if (!$isAjax) {
             require __DIR__ . '/../views/auth/login.php';
         }
+        
     }
 
     // Logout

@@ -11,7 +11,7 @@
           <p class="text-sm text-gray-700 text-center">Sign in to your account to continue swapping books</p>
         </div>
 
-        <form class="space-y-6 mt-4" action="<?= BASE_URL ?>/login" method="POST">
+        <form class="space-y-6 mt-4" id ="loginForm" action="<?= BASE_URL ?>/login" method="POST">
             <!-- Email address -->
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
@@ -87,7 +87,7 @@
                 </button>
             </div>
         </form>
-
+        <div id="response" class="text-center py-2 text-sm font-semibold transition duration-200"></div>
         <!-- Create Account Link -->
         <div class="mt-6 text-center">
           <span class="text-sm text-gray-600">
@@ -120,6 +120,56 @@
                 inputField.attr('type','password');
             }
         });
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+        const responseBox = document.getElementById('response');
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '<?= BASE_URL ?>/login', true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+        xhr.onload = function () {
+        if (xhr.status === 200) {
+            try {
+            const res = JSON.parse(xhr.responseText);
+            responseBox.textContent = res.message;
+            setTimeout(() => {
+                responseBox.textContent = "";
+            }, 1500);
+
+            if (res.success) {
+                responseBox.style.color = 'green';
+                form.reset();
+
+                // Redirect after 1.5 seconds
+                setTimeout(() => {
+                window.location.href = '<?= BASE_URL ?>/';
+                }, 1500);
+            } else {
+                responseBox.style.color = 'red';
+            }
+            } catch (error) {
+            console.error('Parsing error:', error, xhr.responseText);
+            responseBox.textContent = 'Invalid server response.';
+            responseBox.style.color = 'red';
+            }
+        } else {
+            responseBox.textContent = 'Server error.';
+            responseBox.style.color = 'red';
+        }
+        };
+
+        xhr.onerror = function () {
+        responseBox.textContent = 'Request failed.';
+        responseBox.style.color = 'red';
+        };
+
+        xhr.send(formData);
     });
 
 </script>
