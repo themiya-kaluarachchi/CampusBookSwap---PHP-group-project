@@ -14,10 +14,10 @@
           <div>
             <img src="b1.jpg" alt="Main book cover" class="w-full h-64 object-cover rounded-lg shadow-md mb-4" id="main-img">
             <div class="grid grid-cols-4 gap-4">
-              <img src="././assets/images/books/b1.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
-              <img src="././assets/images/books/b2.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
-              <img src="././assets/images/books/b1.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
-              <img src="././assets/images/books/b2.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
+              <img src="<?= BASE_URL ?>/assets/images/books/b1.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
+              <img src="<?= BASE_URL ?>/assets/images/books/b2.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
+              <img src="<?= BASE_URL ?>/assets/images/books/b1.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
+              <img src="<?= BASE_URL ?>/assets/images/books/b2.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
             </div>
           </div>
 
@@ -218,7 +218,7 @@
           <h2 class="text-lg font-semibold pb-4">Similar Books</h2>
           <div class="grid grid-cols gap-2">
             <div class="bg-white p-2 rounded-lg shadow-sm grid grid-cols-2 md:grid-cols-3 gap-2 border border-gray-200">
-              <img src="././assets/images/books/b1.jpg" alt="Book cover" class="object-cover rounded-lg mb-2">
+              <img src="<?= BASE_URL ?>/assets/images/books/b1.jpg" alt="Book cover" class="object-cover rounded-lg mb-2">
               <div class="ml-2">
                 <h3 class="text-sm font-semibold">Data Structures and Algorithms</h3>
                 <p class="text-gray-500 text-xs">$30</p>
@@ -230,7 +230,7 @@
 
             </div>
             <div class="bg-white p-2 rounded-lg shadow-sm grid grid-cols-2 md:grid-cols-3 gap-2 border border-gray-200">
-              <img src="././assets/images/books/b1.jpg" alt="Book cover" class="object-cover rounded-lg mb-2">
+              <img src="<?= BASE_URL ?>/assets/images/books/b1.jpg" alt="Book cover" class="object-cover rounded-lg mb-2">
               <div class="ml-2">
                 <h3 class="text-sm font-semibold">Data Structures and Algorithms</h3>
                 <p class="text-gray-500 text-xs">$30</p>
@@ -242,7 +242,7 @@
 
             </div>
             <div class="bg-white p-2 rounded-lg shadow-sm grid grid-cols-2 md:grid-cols-3 gap-2 border border-gray-200 items-center">
-              <img src="././assets/images/books/b1.jpg" alt="Book cover" class="object-cover rounded-lg mb-2">
+              <img src="<?= BASE_URL ?>/assets/images/books/b1.jpg" alt="Book cover" class="object-cover rounded-lg mb-2">
               <div class="ml-2">
                 <h3 class="text-sm font-semibold flex">Data Structures and Algorithms</h3>
                 <p class="text-gray-500 text-xs">$30</p>

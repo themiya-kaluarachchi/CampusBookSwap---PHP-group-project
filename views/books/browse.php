@@ -119,7 +119,7 @@
             </div>
 
             <!-- Book Info -->
-            <a href="index.php?page=book_details&id=<?= htmlspecialchars($book['id']) ?>">
+            <a href="<?= BASE_URL ?>/book_details/<?= htmlspecialchars($book['id']) ?>">
               <div class="p-6 space-y-4">
                 <div class="flex items-center justify-between">
                   <span class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">

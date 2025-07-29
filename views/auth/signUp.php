@@ -11,11 +11,25 @@
           <p class="text-sm text-gray-700 text-center">Sign Up for new account to continue swapping books</p>
         </div>
 
-        <form class="space-y-6 mt-4">
+        <form class="space-y-6 mt-4" id="signupForm" action='<?= BASE_URL ?>/login' method='POST'>
+
+            <!--first name-->
+            <div>
+                <label for="fname" class="block text-sm font-medium text-gray-700">First Name</label>
+                <input id="fname" type="text" required  name="fname"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+
+            <!--last name-->
+            <div>
+                <label for="lname" class="block text-sm font-medium text-gray-700" >Last Name</label>
+                <input id="lname" type="text" required name="lname"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
             <!-- Email address -->
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-                <input id="email" type="text" required
+                <label for="email" class="block text-sm font-medium text-gray-700" >Email address</label>
+                <input id="email" type="text" required name="email"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
 
@@ -69,8 +83,7 @@
                 <!--
                 <div class="text-sm">
                     <a href="#" class="font-medium text-indigo-400 hover:text-indigo-500">Forgot your password?</a>
-                </div>
--->
+                </div>-->
             </div>
 
             <!-- Submit Button -->
@@ -90,6 +103,8 @@
             </div>
         </form>
 
+        <div id="response" style="margin-top: 10px; color: red;"></div>
+
         <!-- sign in Link -->
         <div class="mt-6 text-center">
           <span class="text-sm text-gray-600">
@@ -103,7 +118,7 @@
 </div>
 
 <script>
-
+    const BASE_URL = "<?= BASE_URL ?>";
     jQuery.noConflict();
 
     jQuery(document).ready(function () {
@@ -122,6 +137,65 @@
                 inputField.attr('type','password');
             }
         });
+        /* jQuery('#signupForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const form = document.getElementById('signupForm');
+            const formData = new FormData(form);
+
+            jQuery.ajax({
+                url: BASE_URL + "/signup",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: "json",
+                success: function (res) {
+                jQuery('#response').text(res.message);
+                if (res.success) {
+                    form.reset();
+                    setTimeout(() => {
+                    window.location.href = "<?= BASE_URL ?>/login";
+                    }, 1500);
+                }
+                },
+                error: function (xhr, status, error) {
+                jQuery('#response').text("Server error or invalid response.");
+                console.error("AJAX Error:", error);
+                }
+            });
+        }); */
     });
+
+  
+   /*  document.getElementById('signupForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "<?= BASE_URL ?>/signup", true);
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+        try {
+            const res = JSON.parse(xhr.responseText);
+            document.getElementById('response').innerText = res.message;
+            if (res.success){
+                 form.reset();
+                 setTimeout(() => window.location.href = "<?= BASE_URL ?>/login", 1500);
+                }
+        } catch (e) {
+            document.getElementById('response').innerText = "Invalid response.";
+            error_log("Method: " . $_SERVER['REQUEST_METHOD']);
+            console.error(e);
+        }
+        } else {
+        document.getElementById('response').innerText = "Server error.";
+        }
+    };
+    xhr.send(formData);
+    }); */
 
 </script>
