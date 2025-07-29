@@ -15,56 +15,62 @@ class AuthController {
 
     // Register
     public function register() {
-        file_put_contents("debug.log", "Method: " . $_SERVER['REQUEST_METHOD'] . PHP_EOL, FILE_APPEND);
+        
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            header('Content-Type: application/json');
 
-             header('Content-Type: application/json');
+            $fname = trim($_POST['fname'] ?? '');
+            $lname = trim($_POST['lname'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $password = trim($_POST['password'] ?? '');
+            $confirm_password = trim($_POST['confirm_password'] ?? '');
 
-            $data = [
-                'fname' => trim($_POST['fname']),
-                'lname' => trim($_POST['lname']),
-                'email' => trim($_POST['email']),
-                'password' => trim($_POST['password']),
-                'confirm_password' => trim($_POST['confirm_password'])
-            ];
-
-            if (empty($data['fname']) || empty($data['lname']) || empty($data['email']) || empty($data['password']) || empty($data['confirm_password'])) {
+            // Validate fields
+            if (empty($fname) || empty($lname) || empty($email) || empty($password) || empty($confirm_password)) {
                 echo json_encode(['success' => false, 'message' => 'Please fill all required fields.']);
-                return;
+                exit;
             }
 
-            if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 echo json_encode(['success' => false, 'message' => 'Invalid email format.']);
-                return;
+                exit;
             }
 
-            if ($data['password'] !== $data['confirm_password']) {
-               echo json_encode(['success' => false, 'message' => 'Passwords do not match.']);
-                return;
+            if ($password !== $confirm_password) {
+                echo json_encode(['success' => false, 'message' => 'Passwords do not match.']);
+                exit;
             }
 
-            if ($this->authModel->emailExists($data['email'])) {
+            if ($this->authModel->emailExists($email)) {
                 echo json_encode(['success' => false, 'message' => 'Email already exists.']);
-                return;
+                exit;
             }
 
+            // Register user
             $cleanData = [
-                'fname' => $data['fname'],
-                'lname' => $data['lname'],
-                'email' => $data['email'],
-                'password' => $data['password'] 
+                'fname' => $fname,
+                'lname' => $lname,
+                'email' => $email,
+                'password' => password_hash($password, PASSWORD_DEFAULT)
             ];
 
             if ($this->authModel->register($cleanData)) {
-                echo json_encode(['success' => true, 'message' => 'Registration successful. Redirecting...']);
-                
-                return;
+                echo json_encode(['success' => true, 'message' => 'Registration successful.']);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Registration failed.']);
-                return;    
             }
-        } else {
+
+            exit;
+        }
+
+        // Show HTML form on GET (non-AJAX)
+        if (!$isAjax) {
             require __DIR__ . '/../views/auth/signUp.php';
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Invalid request.']);
         }
     }
 
@@ -129,3 +135,5 @@ class AuthController {
         }
     }
 }
+
+?>
