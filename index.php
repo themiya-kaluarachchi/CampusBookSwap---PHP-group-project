@@ -6,7 +6,7 @@ require_once __DIR__ . '/config/routes.php';
 
 $db = Database::getInstance()->getConnection();
 $authController = new AuthController($db);
-$bookController = new BookCntroller($db);
+$bookController = new BookController($db);
 
 // Check if it's an AJAX request
 $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
@@ -19,6 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isAjax) {
             break;
         case 'login':
             $authController->login();
+            break;
+        case 'browse':
+            $bookController->browse();
+            break;
+        case 'count':
+            $bookController->count();
             break;
        
     }
@@ -65,6 +71,9 @@ switch ($page) {
     case 'update_profile':
         $authController->updateProfile();
         break;
+/*     case 'count':
+        $bookController->count();
+        break; */
     default:
         include 'views/404.php';
         break;

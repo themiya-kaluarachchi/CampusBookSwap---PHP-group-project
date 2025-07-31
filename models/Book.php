@@ -41,15 +41,24 @@ class Book {
     }
 
     // Fetch all books
-  public function getAllWithImages() {
+public function getAllWithImages($limit, $offset) {
+
     $query = "
         SELECT b.*, bi.image_path
-        FROM books b
+        FROM (
+            SELECT * FROM books ORDER BY id DESC LIMIT $limit OFFSET $offset
+        ) AS b
         LEFT JOIN book_images bi ON b.id = bi.book_id
-        ORDER BY b.id
     ";
 
+
     $result = $this->conn->query($query);
+
+    if (!$result) {
+        error_log("MySQL Error: " . $this->conn->error);
+        return []; 
+    }
+
     $books = [];
 
     while ($row = $result->fetch_assoc()) {
@@ -65,9 +74,8 @@ class Book {
         }
     }
 
-    return array_values($books); 
+    return array_values($books);
 }
-
 
     // Find book by ID
     public function findById($id) {
@@ -129,6 +137,14 @@ class Book {
     // Get last inserted book ID
     public function getLastInsertId() {
     return $this->conn->insert_id;
+}
+
+public function getNumberOfBooks(){
+    $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM books");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['count'];
 }
 
 
