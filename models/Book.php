@@ -10,7 +10,7 @@ class Book {
     public function create($data) {
         $stmt = $this->conn->prepare("
             INSERT INTO books (
-                user_id, title, author, price, category, condition, description, isbn,
+                user_id, title, author, price, category, book_condition, description, isbn,
                 pages, edition, publisher, dimensions, language, image_path,
                 weight, views, created_at, update_at
             )
@@ -18,13 +18,13 @@ class Book {
         ");
 
         $stmt->bind_param(
-            "issdssssisssssdii",
+            "issdssssisssssdi",
             $data['user_id'],
             $data['title'],
             $data['author'],
             $data['price'],
             $data['category'],
-            $data['condition'],
+            $data['book_condition'],
             $data['description'],
             $data['isbn'],
             $data['pages'],
@@ -41,14 +41,33 @@ class Book {
     }
 
     // Fetch all books
-    public function getAll() {
-        $result = $this->conn->query("SELECT * FROM books");
-        $books = [];
-        while ($row = $result->fetch_assoc()) {
-            $books[] = $row;
+  public function getAllWithImages() {
+    $query = "
+        SELECT b.*, bi.image_path
+        FROM books b
+        LEFT JOIN book_images bi ON b.id = bi.book_id
+        ORDER BY b.id
+    ";
+
+    $result = $this->conn->query($query);
+    $books = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $bookId = $row['id'];
+
+        if (!isset($books[$bookId])) {
+            $books[$bookId] = $row;
+            $books[$bookId]['images'] = [];
         }
-        return $books;
+
+        if (!empty($row['image_path'])) {
+            $books[$bookId]['images'][] = $row['image_path'];
+        }
     }
+
+    return array_values($books); 
+}
+
 
     // Find book by ID
     public function findById($id) {
@@ -69,7 +88,7 @@ class Book {
     public function updateById($id, $data) {
         $stmt = $this->conn->prepare("
             UPDATE books SET
-                title = ?, author = ?, price = ?, category = ?, condition = ?, description = ?, isbn = ?,
+                title = ?, author = ?, price = ?, category = ?, book_condition = ?, description = ?, isbn = ?,
                 pages = ?, edition = ?, publisher = ?, dimensions = ?, language = ?, image_path = ?,
                 weight = ?, views = ?, update_at = NOW()
             WHERE id = ?
@@ -81,7 +100,7 @@ class Book {
             $data['author'],
             $data['price'],
             $data['category'],
-            $data['condition'],
+            $data['book_condition'],
             $data['description'],
             $data['isbn'],
             $data['pages'],
@@ -97,4 +116,20 @@ class Book {
 
         return $stmt->execute();
     }
+
+    // Save book images
+    public function saveImages($bookId, $imagePaths) {
+        $stmt = $this->conn->prepare("INSERT INTO book_images (book_id, image_path) VALUES (?, ?)");
+        foreach ($imagePaths as $path) {
+            $stmt->bind_param("is", $bookId, $path);
+            $stmt->execute();
+        }
+    }
+
+    // Get last inserted book ID
+    public function getLastInsertId() {
+    return $this->conn->insert_id;
+}
+
+
 }
