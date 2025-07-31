@@ -80,8 +80,11 @@ public function browse() {
 
     $limit = isset($_POST['limit']) ? (int)$_POST['limit'] : 6;
     $offset = isset($_POST['offset']) ? (int)$_POST['offset'] : 0;
+    $category  = isset($_POST['category']) ? $_POST['category'] : [];
+    $condition  = isset($_POST['condition']) ? $_POST['condition'] : [];
+    $title  = isset($_POST['title']) ? $_POST['title'] : [];
 
-    $books = $this->bookModel->getAllWithImages($limit, $offset);
+    $books = $this->bookModel->getAllWithImages($limit, $offset,$category,$condition,);
 
     if (
         !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&

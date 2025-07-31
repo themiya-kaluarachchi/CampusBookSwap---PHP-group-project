@@ -16,28 +16,32 @@
         <h4 class="text-lg font-semibold text-slate-700 mb-4">Category</h4>
         <div class="space-y-3">
           <label class="flex items-center cursor-pointer hover:bg-slate-50 rounded-lg p-2 transition-colors">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded filter-category" value="TextBooks">
             <span class="ml-3 text-slate-600 font-medium">Text Books</span>
           </label>
           <label class="flex items-center cursor-pointer hover:bg-slate-50 rounded-lg p-2 transition-colors">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded filter-category" value="Literature">
             <span class="ml-3 text-slate-600 font-medium">Literature</span>
           </label>
           <label class="flex items-center cursor-pointer hover:bg-slate-50 rounded-lg p-2 transition-colors">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded filter-category" value="Science">
             <span class="ml-3 text-slate-600 font-medium">Science</span>
           </label>
           <label class="flex items-center cursor-pointer hover:bg-slate-50 rounded-lg p-2 transition-colors">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded filter-category" value="Tech">
             <span class="ml-3 text-slate-600 font-medium">Tech</span>
           </label>
           <label class="flex items-center cursor-pointer hover:bg-slate-50 rounded-lg p-2 transition-colors">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded">
-            <span class="ml-3 text-slate-600 font-medium">Math</span>
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded filter-category" value="Mathematics" >
+            <span class="ml-3 text-slate-600 font-medium">Mathematics</span>
           </label>
           <label class="flex items-center cursor-pointer hover:bg-slate-50 rounded-lg p-2 transition-colors">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded filter-category" value="History">
             <span class="ml-3 text-slate-600 font-medium">History</span>
+          </label>
+          <label class="flex items-center cursor-pointer hover:bg-slate-50 rounded-lg p-2 transition-colors">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded filter-category" value="Other">
+            <span class="ml-3 text-slate-600 font-medium">Other</span>
           </label>
         </div>
       </div>
@@ -47,26 +51,30 @@
         <h4 class="text-lg font-semibold text-slate-700 mb-4">Condition</h4>
         <div class="space-y-3">
           <label class="flex items-center cursor-pointer hover:bg-slate-50 rounded-lg p-2 transition-colors">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded filter-condition"value="New">
             <span class="ml-3 text-slate-600 font-medium">New</span>
           </label>
           <label class="flex items-center cursor-pointer hover:bg-slate-50 rounded-lg p-2 transition-colors">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded filter-condition" value="Used">
             <span class="ml-3 text-slate-600 font-medium">Used</span>
           </label>
           <label class="flex items-center cursor-pointer hover:bg-slate-50 rounded-lg p-2 transition-colors">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded filter-condition" value="Refurbished">
             <span class="ml-3 text-slate-600 font-medium">Refurbished</span>
+          </label>
+           <label class="flex items-center cursor-pointer hover:bg-slate-50 rounded-lg p-2 transition-colors">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded filter-condition" value="Poor">
+            <span class="ml-3 text-slate-600 font-medium">Poor</span>
           </label>
         </div>
       </div>
 
       <!-- Filter Actions -->
       <div class="flex space-x-3">
-        <button class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+        <button class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors apply-filters">
           Apply Filters
         </button>
-        <button class="flex-1 bg-slate-200 text-slate-700 py-2 px-4 rounded-lg font-medium hover:bg-slate-300 transition-colors">
+        <button class="flex-1 bg-slate-200 text-slate-700 py-2 px-4 rounded-lg font-medium hover:bg-slate-300 transition-colors clear-filters">
           Clear All
         </button>
       </div>
@@ -82,6 +90,7 @@
             <input 
               type="text" 
               placeholder="Search for a book..." 
+              id = "searchInput"
               class="w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             >
           </div>
@@ -128,15 +137,32 @@
     const limit = 6;
     let totalPages = 1;
 
+    // Get selected filters
+    function getSelectedFilters(className) {
+      const selected = [];
+      jQuery(`input.${className}:checked`).each(function () {
+        selected.push(jQuery(this).val());
+      });
+      return selected;
+    }
+
+
+
     function loadBooks(page) {
+
       const offset = (page - 1) * limit;
+      const selectedCategory = getSelectedFilters('filter-category');
+      const selectedCondition = getSelectedFilters('filter-condition');
+      let selectedTitle = jQuery('#searchInput').val();
+
+      console.log(selectedCategory, selectedCondition);
 
       jQuery('.book-grid').html('<div class="text-center py-12">Loading...</div>');
 
       jQuery.ajax({
         url: '<?= BASE_URL ?>/browse',
         method: 'POST',
-        data: { limit: limit, offset: offset },
+        data: { limit: limit, offset: offset, category: selectedCategory, condition: selectedCondition, title: selectedTitle },
         success: function (response) {
           jQuery('.book-grid').html(response);
           jQuery('.current-page').text(page);
@@ -167,7 +193,7 @@
       }
     });
 
-
+    // Pagination
     jQuery('.next-btn').click(function () {
       if (currentPage < totalPages) {
         currentPage++;
@@ -181,5 +207,50 @@
         loadBooks(currentPage);
       }
     });
+
+    // Apply Filters
+    jQuery('.apply-filters').click(function () {
+      currentPage = 1;
+      //updateTotalPagesAndLoad(currentPage);
+      loadBooks(currentPage);
+    });
+
+    // Clear Filters
+    jQuery('.clear-filters').click(function () {
+        jQuery('.filter-category, .filter-condition').prop('checked', false);
+        currentPage = 1;
+        loadBooks(currentPage);
+    });
+
+    // Update Total Pages and Load Books
+    function updateTotalPagesAndLoad(page) {
+      currentPage = page;
+      jQuery.ajax({
+        url: '<?= BASE_URL ?>/count',
+        method: 'POST',
+        data: { title: jQuery('#searchInput').val() },
+        success: function (response) {
+          const bookCount = parseInt(response.count);
+          totalPages = Math.ceil(bookCount / limit);
+          jQuery('.current-page').text(currentPage);
+          jQuery('.total-pages').text(totalPages);
+          loadBooks(currentPage);
+        },
+        error: function () {
+          alert('Failed to count books');
+        }
+      });
+    }
+
+    // Search
+     let searchTimeout;
+      jQuery('#searchInput').on('input', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          updateTotalPagesAndLoad(1);
+        }, 400); 
+      });
+
+
   });
 </script>

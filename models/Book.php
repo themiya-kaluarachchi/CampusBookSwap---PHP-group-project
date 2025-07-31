@@ -41,22 +41,45 @@ class Book {
     }
 
     // Fetch all books
-public function getAllWithImages($limit, $offset) {
+public function getAllWithImages($limit, $offset, $categories = [], $conditions = [])
+{
+    $limit = (int) $limit;
+    $offset = (int) $offset;
 
+    // Start building subquery with alias immediately
     $query = "
         SELECT b.*, bi.image_path
         FROM (
             SELECT * FROM books ORDER BY id DESC LIMIT $limit OFFSET $offset
         ) AS b
-        LEFT JOIN book_images bi ON b.id = bi.book_id
+        JOIN book_images bi ON b.id = bi.book_id
     ";
 
+    // Add filters using WHERE
+    $whereClauses = [];
 
+    if (!empty($categories)) {
+        $escapedCats = array_map([$this->conn, 'real_escape_string'], $categories);
+        $catList = "'" . implode("','", $escapedCats) . "'";
+        $whereClauses[] = "b.category IN ($catList)";
+    }
+
+    if (!empty($conditions)) {
+        $escapedConds = array_map([$this->conn, 'real_escape_string'], $conditions);
+        $condList = "'" . implode("','", $escapedConds) . "'";
+        $whereClauses[] = "b.book_condition IN ($condList)";
+    }
+
+    if (!empty($whereClauses)) {
+        $query .= " WHERE " . implode(" OR ", $whereClauses);
+    }
+
+    // Execute and build result
     $result = $this->conn->query($query);
 
     if (!$result) {
         error_log("MySQL Error: " . $this->conn->error);
-        return []; 
+        return [];
     }
 
     $books = [];
@@ -76,6 +99,7 @@ public function getAllWithImages($limit, $offset) {
 
     return array_values($books);
 }
+
 
     // Find book by ID
     public function findById($id) {
@@ -136,16 +160,16 @@ public function getAllWithImages($limit, $offset) {
 
     // Get last inserted book ID
     public function getLastInsertId() {
-    return $this->conn->insert_id;
-}
+        return $this->conn->insert_id;
+    }
 
-public function getNumberOfBooks(){
-    $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM books");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    return $row['count'];
-}
+    public function getNumberOfBooks(){
+        $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM books");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row['count'];
+    }
 
 
 }
