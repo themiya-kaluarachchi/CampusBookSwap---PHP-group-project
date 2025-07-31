@@ -1,86 +1,3 @@
-<?php
-    session_start();
-
-    $errors = [];
-    $submitted = false;
-    $uploadDir = 'uploads/';
-    $uploadedImages = [];
-    $submittedData = [];
-    $oldInput = [];
-
-    if (isset($_SESSION['form_errors'])) {
-        $errors = $_SESSION['form_errors'];
-        unset($_SESSION['form_errors']);
-    }
-
-    if (isset($_SESSION['old_input'])) {
-        $oldInput = $_SESSION['old_input'];
-        unset($_SESSION['old_input']);
-    }
-
-    if (isset($_SESSION['book_submitted'])) {
-        $submitted = true;
-        $submittedData = $_SESSION['submitted_data'];
-        unset($_SESSION['book_submitted']);
-        unset($_SESSION['submitted_data']);
-    }
-
-    if ($_SERVER["REQUEST_METHOD"] === "POST") {
-        // Basic validation
-        $title = trim($_POST['title'] ?? '');
-        $author = trim($_POST['author'] ?? '');
-        $category = $_POST['category'] ?? '';
-        $condition = $_POST['condition'] ?? '';
-        $isFree = isset($_POST['isFree']) ? true : false;
-        $price = $isFree ? 0 : trim($_POST['price'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-
-        if (!$title || !$author || !$category || !$condition || (!$isFree && !$price)) {
-            $errors[] = "Please fill all required fields.";
-        }
-
-        // Handle file upload (max 3)
-        if (isset($_FILES['images']) && count($_FILES['images']['name']) > 0) {
-            for ($i = 0; $i < min(3, count($_FILES['images']['name'])); $i++) {
-                $tmpName = $_FILES['images']['tmp_name'][$i];
-                $name = basename($_FILES['images']['name'][$i]);
-                $sanitizedName = preg_replace('/[^a-zA-Z0-9.\-_]/', '_', $name); // Replace unsafe characters
-                $uniqueName = uniqid() . '-' . $sanitizedName;
-                $targetFile = $uploadDir . $uniqueName;
-
-                if (move_uploaded_file($tmpName, $targetFile)) {
-                    $uploadedImages[] = $targetFile;
-                } else {
-                    $errors[] = "Failed to upload image: $name";
-                }
-            }
-        }
-
-        if (empty($errors)) {
-            $_SESSION['book_submitted'] = true;
-            $_SESSION['submitted_data'] = [
-                'title' => $title,
-                'author' => $author,
-                'category' => $category,
-                'condition' => $condition,
-                'price' => $price,
-                'isFree' => $isFree,
-                'description' => $description,
-                'images' => $uploadedImages
-            ];
-            header("Location: " . $_SERVER['REQUEST_URI']);
-            exit;
-        }
-        if (!empty($errors)) {
-            $_SESSION['form_errors'] = $errors;
-            $_SESSION['old_input'] = $_POST;
-            header("Location: " . $_SERVER['REQUEST_URI']);
-            exit;
-        }
-    }
-    
-?>
-
 <!-- Content -->
 <div class="container mx-auto px-4 py-8 pt-24">
     <div class="max-w-6xl mx-auto">
@@ -102,12 +19,11 @@
                     Book Details
                 </h2>
                 <!-- Form Start here -->
-                <form method="post" enctype="multipart/form-data" class="space-y-6">
+                <form method="post" enctype="multipart/form-data" class="space-y-6" id="bookForm" action="<?= BASE_URL ?>/add_a_book">
                     <!-- Title -->
                     <div class="space-y-2">
                         <label for="title" class="block font-medium">Book Title *</label>
                         <input type="text" id="title" name="title" required placeholder="Enter the book title"
-                               value="<?= htmlspecialchars($oldInput['title'] ?? '') ?>"
                                class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
                     </div>
 
@@ -115,7 +31,6 @@
                     <div class="space-y-2">
                         <label for="author" class="block font-medium">Author *</label>
                         <input type="text" id="author" name="author" required placeholder="Enter the author's name"
-                               value="<?= htmlspecialchars($oldInput['author'] ?? '') ?>"
                                class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
                      </div>
 
@@ -127,23 +42,23 @@
                             </label>
                             <select name="category" id="category" required
                                     class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
-                                    <option value="textbooks" <?= ($oldInput['category'] ?? '') == 'textbooks' ? 'selected' : '' ?>>Textbooks</option>
-                                    <option value="literature" <?= ($oldInput['category'] ?? '') == 'literature' ? 'selected' : '' ?>>Literature</option>
-                                    <option value="science" <?= ($oldInput['category'] ?? '') == 'science' ? 'selected' : '' ?>>Science</option>
-                                    <option value="tech" <?= ($oldInput['category'] ?? '') == 'tech' ? 'selected' : '' ?>>Technology</option>
-                                    <option value="math" <?= ($oldInput['category'] ?? '') == 'math' ? 'selected' : '' ?>>Mathematics</option>
-                                    <option value="history" <?= ($oldInput['category'] ?? '') == 'history' ? 'selected' : '' ?>>History</option>
-                                    <option value="other" <?= ($oldInput['category'] ?? '') == 'other' ? 'selected' : '' ?>>Other</option>
+                                    <option value="textbooks">Textbooks</option>
+                                    <option value="literature">Literature</option>
+                                    <option value="science">Science</option>
+                                    <option value="tech">Technology</option>
+                                    <option value="math">Mathematics</option>
+                                    <option value="history">History</option>
+                                    <option value="other">Other</option>
                             </select>
                         </div>
                         <div class="space-y-2">
                             <label for="condition" class="block font-medium">Condition *</label>
-                            <select name="condition" id="condition" required
+                            <select name="book_condition" id="condition" required
                                     class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
-                            <option value="new" <?= ($oldInput['condition'] ?? '') == 'new' ? 'selected' : '' ?>>New</option>
-                            <option value="like-new" <?= ($oldInput['condition'] ?? '') == 'like-new' ? 'selected' : '' ?>>Like New</option>
-                            <option value="used" <?= ($oldInput['condition'] ?? '') == 'used' ? 'selected' : '' ?>>Used</option>
-                            <option value="poor" <?= ($oldInput['condition'] ?? '') == 'poor' ? 'selected' : '' ?>>Poor</option>
+                            <option value="new">New</option>
+                            <option value="like-new">Like New</option>
+                            <option value="used">Used</option>
+                            <option value="poor">Poor</option>
                             </select>
                         </div>
                     </div>
@@ -151,7 +66,7 @@
                     <!-- Donate or Price -->
                     <div class="space-y-4">
                         <div class="flex items-center space-x-2">
-                            <input type="checkbox" id="freeCheckbox" name="isFree" value="1"  <?= isset($oldInput['isFree']) ? 'checked' : '' ?>
+                            <input type="checkbox" id="freeCheckbox" name="isFree" value="1"
                                 class="accent-blue-500 h-4 w-4" >
                             <label for="free" class="font-medium">Donate for free</label>
                         </div>
@@ -159,7 +74,6 @@
                         <div class="space-y-2">
                             <label for="price" class="block font-medium">Price (Rs) *</label>
                             <input type="number" id="price" name="price" step="0.01" placeholder="0.00"
-                                   value="<?= htmlspecialchars($oldInput['price'] ?? '') ?>"
                                    class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
                         </div>
                     </div>
@@ -170,7 +84,6 @@
                         <textarea id="description" name="description" rows="4"
                                     placeholder="Describe the book's condition, any highlights, missing pages, etc."
                                     class="w-full border border-blue-200 rounded px-4 py-2 focus:outline-none focus:ring-blue-300 focus:border-blue-400">
-                            <?= htmlspecialchars($oldInput['description'] ?? '') ?>
                         </textarea>
                     </div>
 
@@ -201,12 +114,50 @@
                         </label>
                     </div>
 
-                   
+                    <h2 class="text-xl font-bold mb-4">Extra Book Details</h2>
+                    <!-- Extra Book Details -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label for="isbn" class="block font-medium">ISBN</label>
+                            <input type="text" id="isbn" name="isbn" placeholder="e.g., 978-0262033848"
+                                class="w-full border border-blue-200 rounded px-4 py-2">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="pages" class="block font-medium">Pages</label>
+                            <input type="number" id="pages" name="pages" placeholder="e.g., 1312"
+                                class="w-full border border-blue-200 rounded px-4 py-2">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="edition" class="block font-medium">Edition</label>
+                            <input type="text" id="edition" name="edition" placeholder="e.g., 3rd Edition"
+                                class="w-full border border-blue-200 rounded px-4 py-2">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="weight" class="block font-medium">Weight</label>
+                            <input type="text" id="weight" name="weight" placeholder="e.g., 3.2 lbs"
+                                class="w-full border border-blue-200 rounded px-4 py-2">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="publisher" class="block font-medium">Publisher</label>
+                            <input type="text" id="publisher" name="publisher" placeholder="e.g., MIT Press"
+                                class="w-full border border-blue-200 rounded px-4 py-2">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="dimensions" class="block font-medium">Dimensions</label>
+                            <input type="text" id="dimensions" name="dimensions" placeholder="e.g., 9.2 x 7.5 x 2.2 inches"
+                                class="w-full border border-blue-200 rounded px-4 py-2">
+                        </div>
+                        <div class="space-y-2 col-span-2">
+                            <label for="language" class="block font-medium">Language</label>
+                            <input type="text" id="language" name="language" placeholder="e.g., English"
+                                class="w-full border border-blue-200 rounded px-4 py-2">
+                        </div>
+                    </div>
 
                     <!-- Submit Buttons -->
                     <div class="flex gap-4">
                         <button type="submit"
-                                class="flex-1 bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600">
+                                class="flex-1 bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600" id="submitButton">
                             Submit Listing
                         </button>
                         <button type="reset"
@@ -215,28 +166,6 @@
                         </button>
                     </div>
                 </form>
-
-                <!-- Validation Details -->
-                <?php if ($submitted): ?>
-                <div class="bg-green-100 text-green-800 p-4 rounded mt-6">
-                    <h3 class="font-bold text-lg mb-2">Book Listed Successfully!</h3>
-                    <ul class="text-sm space-y-1">
-                        <li><strong>Title:</strong> <?= htmlspecialchars($submittedData['title']) ?></li>
-                        <li><strong>Author:</strong> <?= htmlspecialchars($submittedData['author']) ?></li>
-                        <li><strong>Category:</strong> <?= htmlspecialchars($submittedData['category']) ?></li>
-                        <li><strong>Condition:</strong> <?= htmlspecialchars($submittedData['condition']) ?></li>
-                        <li><strong>Price:</strong> <?= $submittedData['isFree'] ? 'Free' : 'Rs. ' . htmlspecialchars($submittedData['price']) ?></li>
-                        <li><strong>Description:</strong> <?= nl2br(htmlspecialchars($submittedData['description'])) ?></li>
-                    </ul>
-                    <?php if (!empty($submittedData['images'])): ?>
-                        <div class="mt-4 flex gap-4">
-                            <?php foreach ($submittedData['images'] as $img): ?>
-                                <img src="<?= htmlspecialchars($img) ?>" class="h-24 rounded border">
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-                <?php endif; ?>
             </div>
 
             <!-- Right Column -->
@@ -298,9 +227,22 @@
     </div>
 </div>
 
-
-
 <script>
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("addBookForm");
+
+        <?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($bookId)) : ?>
+        // Reset form after successful submit
+        alert("Book added successfully!");
+        form.reset();
+        <?php endif; ?>
+    });
+
+
+  // Initialize Lucide icons
+  lucide.createIcons();
 
   // Price disable 
   const freeCheckbox = document.getElementById('freeCheckbox');
@@ -418,11 +360,11 @@
     });
 
     function updatePreview() {
-        document.getElementById('previewTitle').innerText = document.getElementById('title').value;
-        document.getElementById('previewAuthor').innerText = document.getElementById('author').value;
-        document.getElementById('previewCategory').innerText = document.getElementById('category').value;
-        document.getElementById('previewCondition').innerText = document.getElementById('condition').value;
-        document.getElementById('previewDescription').innerText = document.getElementById('description').value;
+        document.getElementById('previewTitle').innerText = document.getElementById('title').value || 'Title';
+        document.getElementById('previewAuthor').innerText = document.getElementById('author').value || 'Author';
+        document.getElementById('previewCategory').innerText = document.getElementById('category').value || 'Category';
+        document.getElementById('previewCondition').innerText = document.getElementById('condition').value || 'Condition';
+        document.getElementById('previewDescription').innerText = document.getElementById('description').value || 'Description';
 
         const isFree = document.getElementById('freeCheckbox').checked;
         const previewPrice = document.getElementById('previewPrice');
@@ -430,9 +372,11 @@
             previewPrice.innerHTML = `<span class="text-blue-600 font-bold text-lg">FREE</span>`;
         } else {
             const priceVal = document.getElementById('price').value;
-            previewPrice.innerHTML = `<span class="text-green-600 font-bold text-lg">Rs. ${priceVal}</span>`;
+            previewPrice.innerHTML = `<span class="text-green-600 font-bold text-lg">Rs. ${priceVal || '0.00'}</span>`;
         }
     }
 
-    
+    // Initialize preview with default values
+    updatePreview();
 </script>
+

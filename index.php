@@ -1,10 +1,12 @@
 <?php
 require_once 'controllers/AuthController.php';
+require_once 'controllers/BookController.php';
 require_once 'config/db.php';
 require_once __DIR__ . '/config/routes.php';
 
 $db = Database::getInstance()->getConnection();
 $authController = new AuthController($db);
+$bookController = new BookCntroller($db);
 
 // Check if it's an AJAX request
 $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
@@ -38,13 +40,13 @@ switch ($page) {
         $authController->register();
         break;
     case 'browse':
-        include 'views/books/browse.php';
+        $bookController->browse();
         break;
     case 'mybooks':
         include 'views/books/mybooks.php';
         break;
     case 'add_a_book':
-        include 'views/books/addABook.php';
+        $bookController->addABook();
         break;
     case 'book_details':
         if ($param) $_GET['book_id'] = $param;

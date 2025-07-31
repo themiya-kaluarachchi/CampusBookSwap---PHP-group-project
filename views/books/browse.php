@@ -100,7 +100,7 @@
 
       <!-- Books Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        <?php foreach ($limitBooks as $index => $book): ?>
+        <?php foreach ($books as $index => $book): ?>
           <div class="group relative bg-white rounded-3xl overflow-hidden shadow-lg transition-all duration-500 transform " data-aos="fade-up" data-aos-delay="<?= $index * 100 ?>">
             
             <!-- Love Button -->
@@ -109,14 +109,25 @@
             </button>
 
             <!-- Book Image -->
-            <div class="relative h-64 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
-              <img 
-                src="./assets/images/books/book1.jpg" 
-                alt="<?= htmlspecialchars($book['title']) ?>" 
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="img-group">
+
+              <div class="hidden">
+                <?php foreach ($book['images'] as $imgIndex => $imagePath): ?>
+                  <img src="<?= htmlspecialchars($imagePath) ?>" class="sub-img" />
+                <?php endforeach; ?>
+              </div>
+
+              <div class="relative h-64 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group">
+                <img 
+                  src="<?= htmlspecialchars($book['images'][0] ?? 'uploads/default.jpg') ?>" 
+                  alt="<?= htmlspecialchars($book['title']) ?>" 
+                  class="main-img w-full h-full object-cover transition-transform duration-50 group-hover:scale-110"
+                />
+
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
             </div>
+
 
             <!-- Book Info -->
             <a href="<?= BASE_URL ?>/book_details/<?= htmlspecialchars($book['id']) ?>">
@@ -126,7 +137,7 @@
                     <?= htmlspecialchars($book['category']) ?>
                   </span>
                   <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                    <?= htmlspecialchars($book['condition']) ?>
+                    <?= htmlspecialchars($book['book_condition']) ?>
                   </span>
                 </div>
               
@@ -138,7 +149,7 @@
               
                 <div class="flex items-center justify-between pt-4 border-t border-slate-100">
                   <div class="text-2xl font-black text-blue-600">
-                    $<?= htmlspecialchars($book['price'] ?? '45') ?>
+                    <?= htmlspecialchars($book['price']==0 ? 'FREE' : "Rs: ".$book['price']) ?>
                   </div>
                   <div class="text-sm text-slate-500 font-medium">
                     by <?= htmlspecialchars($book['user_name'] ?? 'Sarah M.') ?>
@@ -174,3 +185,35 @@
 
   </div>
 </div>
+
+<script>
+
+jQuery.noConflict();
+  jQuery(document).ready(function () {
+
+    jQuery(".img-group").each(function () {
+      const container = jQuery(this);
+      const imgs = container.find(".sub-img").map(function () {
+        return jQuery(this).attr("src");
+      }).get();
+
+      if (imgs.length <= 1) return; 
+
+      let index = 0;
+      const mainImg = container.find(".main-img");
+
+      console.log(imgs);
+
+
+      //mainImg.attr("src", imgs[0]);
+
+      setInterval(() => {
+        index = (index + 1) % imgs.length;
+        mainImg.attr("src", imgs[index]);
+      }, 2000);
+    });
+
+  });
+</script>
+
+
