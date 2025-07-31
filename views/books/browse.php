@@ -95,7 +95,7 @@
             >
           </div>
           <div class="sm:w-48">
-            <select class="w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+            <select class="w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" id="sort-value">
               <option value="newest">Sort by: Newest</option>
               <option value="oldest">Sort by: Oldest</option>
               <option value="price-low">Price: Low to High</option>
@@ -153,7 +153,8 @@
       const offset = (page - 1) * limit;
       const selectedCategory = getSelectedFilters('filter-category');
       const selectedCondition = getSelectedFilters('filter-condition');
-      let selectedTitle = jQuery('#searchInput').val();
+      let searchedTitle = jQuery('#searchInput').val();
+      const sort = jQuery('#sort-value').val();
 
       console.log(selectedCategory, selectedCondition);
 
@@ -162,7 +163,7 @@
       jQuery.ajax({
         url: '<?= BASE_URL ?>/browse',
         method: 'POST',
-        data: { limit: limit, offset: offset, category: selectedCategory, condition: selectedCondition, title: selectedTitle },
+        data: { limit: limit, offset: offset, category: selectedCategory, condition: selectedCondition, search: searchedTitle ,sort:sort},
         success: function (response) {
           jQuery('.book-grid').html(response);
           jQuery('.current-page').text(page);
@@ -250,6 +251,11 @@
           updateTotalPagesAndLoad(1);
         }, 400); 
       });
+
+      jQuery('#sort-value').on('change', function () {
+       updateTotalPagesAndLoad(1); 
+      });
+
 
 
   });

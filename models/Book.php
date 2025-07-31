@@ -41,64 +41,85 @@ class Book {
     }
 
     // Fetch all books
-public function getAllWithImages($limit, $offset, $categories = [], $conditions = [])
-{
-    $limit = (int) $limit;
-    $offset = (int) $offset;
+    public function getAllWithImages($limit, $offset, $categories = [], $conditions = [], $search = '', $sort = '') {
+        $limit = (int) $limit;
+        $offset = (int) $offset;
 
-    // Start building subquery with alias immediately
-    $query = "
-        SELECT b.*, bi.image_path
-        FROM (
-            SELECT * FROM books ORDER BY id DESC LIMIT $limit OFFSET $offset
-        ) AS b
-        JOIN book_images bi ON b.id = bi.book_id
-    ";
+        $whereClauses = [];
 
-    // Add filters using WHERE
-    $whereClauses = [];
-
-    if (!empty($categories)) {
-        $escapedCats = array_map([$this->conn, 'real_escape_string'], $categories);
-        $catList = "'" . implode("','", $escapedCats) . "'";
-        $whereClauses[] = "b.category IN ($catList)";
-    }
-
-    if (!empty($conditions)) {
-        $escapedConds = array_map([$this->conn, 'real_escape_string'], $conditions);
-        $condList = "'" . implode("','", $escapedConds) . "'";
-        $whereClauses[] = "b.book_condition IN ($condList)";
-    }
-
-    if (!empty($whereClauses)) {
-        $query .= " WHERE " . implode(" OR ", $whereClauses);
-    }
-
-    // Execute and build result
-    $result = $this->conn->query($query);
-
-    if (!$result) {
-        error_log("MySQL Error: " . $this->conn->error);
-        return [];
-    }
-
-    $books = [];
-
-    while ($row = $result->fetch_assoc()) {
-        $bookId = $row['id'];
-
-        if (!isset($books[$bookId])) {
-            $books[$bookId] = $row;
-            $books[$bookId]['images'] = [];
+        if (!empty($categories)) {
+            $escapedCats = array_map([$this->conn, 'real_escape_string'], $categories);
+            $catList = "'" . implode("','", $escapedCats) . "'";
+            $whereClauses[] = "category IN ($catList)";
         }
 
-        if (!empty($row['image_path'])) {
-            $books[$bookId]['images'][] = $row['image_path'];
+        if (!empty($conditions)) {
+            $escapedConds = array_map([$this->conn, 'real_escape_string'], $conditions);
+            $condList = "'" . implode("','", $escapedConds) . "'";
+            $whereClauses[] = "book_condition IN ($condList)";
         }
-    }
 
-    return array_values($books);
-}
+        if (!empty($search)) {
+            $escapedSearch = $this->conn->real_escape_string($search);
+            $whereClauses[] = "(title LIKE '%$escapedSearch%' OR author LIKE '%$escapedSearch%' OR description LIKE '%$escapedSearch%')";
+        }
+
+        $whereSQL = '';
+        if (!empty($whereClauses)) {
+            $whereSQL = 'WHERE ' . implode(' AND ', $whereClauses);
+        }
+
+        // Sorting
+        $orderClause = "ORDER BY id DESC"; 
+        switch ($sort) {
+            case 'oldest':
+                $orderClause = "ORDER BY id ASC";
+                break;
+            case 'price-low':
+                $orderClause = "ORDER BY price ASC";
+                break;
+            case 'price-high':
+                $orderClause = "ORDER BY price DESC";
+                break;
+            case 'title':
+                $orderClause = "ORDER BY title ASC";
+                break;
+        }
+        $query = "
+            SELECT b.*, bi.image_path
+            FROM (
+                SELECT * FROM books
+                $whereSQL
+                $orderClause
+                LIMIT $limit OFFSET $offset
+            ) AS b
+            LEFT JOIN book_images bi ON b.id = bi.book_id
+        ";
+
+        $result = $this->conn->query($query);
+
+        if (!$result) {
+            error_log("MySQL Error: " . $this->conn->error);
+            return [];
+        }
+
+        $books = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $bookId = $row['id'];
+
+            if (!isset($books[$bookId])) {
+                $books[$bookId] = $row;
+                $books[$bookId]['images'] = [];
+            }
+
+            if (!empty($row['image_path'])) {
+                $books[$bookId]['images'][] = $row['image_path'];
+            }
+        }
+
+        return array_values($books);
+    }
 
 
     // Find book by ID

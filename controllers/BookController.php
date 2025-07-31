@@ -82,9 +82,10 @@ public function browse() {
     $offset = isset($_POST['offset']) ? (int)$_POST['offset'] : 0;
     $category  = isset($_POST['category']) ? $_POST['category'] : [];
     $condition  = isset($_POST['condition']) ? $_POST['condition'] : [];
-    $title  = isset($_POST['title']) ? $_POST['title'] : [];
+    $search  = isset($_POST['search']) ? $_POST['search'] : '';
+    $sort = isset($_POST['sort']) ? $_POST['sort'] : '';
 
-    $books = $this->bookModel->getAllWithImages($limit, $offset,$category,$condition,);
+    $books = $this->bookModel->getAllWithImages($limit, $offset,$category,$condition,$search,$sort);
 
     if (
         !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
