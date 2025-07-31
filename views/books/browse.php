@@ -1,6 +1,5 @@
 <?php
     include './config/book.php';
-    $limitBooks = array_slice($sampleBooks, 0, 6);
 ?>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -11,7 +10,7 @@
       <h3 class="text-2xl font-bold text-slate-800 mb-6" data-aos="fade-up">
         Filter By
       </h3>
-      
+
       <!-- Filter by Category -->
       <div class="mb-8" data-aos="fade-up" data-aos-delay="100">
         <h4 class="text-lg font-semibold text-slate-700 mb-4">Category</h4>
@@ -99,85 +98,22 @@
       </div>
 
       <!-- Books Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        <?php foreach ($books as $index => $book): ?>
-          <div class="group relative bg-white rounded-3xl overflow-hidden shadow-lg transition-all duration-500 transform " data-aos="fade-up" data-aos-delay="<?= $index * 100 ?>">
-            
-            <!-- Love Button -->
-            <button class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <i data-lucide="heart" class="w-5 h-5 text-slate-400 group-hover:text-red-500 group-hover:scale-110 transition-all"></i>
-            </button>
-
-            <!-- Book Image -->
-            <div class="img-group">
-
-              <div class="hidden">
-                <?php foreach ($book['images'] as $imgIndex => $imagePath): ?>
-                  <img src="<?= htmlspecialchars($imagePath) ?>" class="sub-img" />
-                <?php endforeach; ?>
-              </div>
-
-              <div class="relative h-64 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group">
-                <img 
-                  src="<?= htmlspecialchars($book['images'][0] ?? 'uploads/default.jpg') ?>" 
-                  alt="<?= htmlspecialchars($book['title']) ?>" 
-                  class="main-img w-full h-full object-cover transition-transform duration-50 group-hover:scale-110"
-                />
-
-                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-            </div>
-
-
-            <!-- Book Info -->
-            <a href="<?= BASE_URL ?>/book_details/<?= htmlspecialchars($book['id']) ?>">
-              <div class="p-6 space-y-4">
-                <div class="flex items-center justify-between">
-                  <span class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                    <?= htmlspecialchars($book['category']) ?>
-                  </span>
-                  <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                    <?= htmlspecialchars($book['book_condition']) ?>
-                  </span>
-                </div>
-              
-                <h3 class="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-2">
-                  <?= htmlspecialchars($book['title']) ?>
-                </h3>
-              
-                <p class="text-slate-600 font-medium"><?= htmlspecialchars($book['author']) ?></p>
-              
-                <div class="flex items-center justify-between pt-4 border-t border-slate-100">
-                  <div class="text-2xl font-black text-blue-600">
-                    <?= htmlspecialchars($book['price']==0 ? 'FREE' : "Rs: ".$book['price']) ?>
-                  </div>
-                  <div class="text-sm text-slate-500 font-medium">
-                    by <?= htmlspecialchars($book['user_name'] ?? 'Sarah M.') ?>
-                  </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <!-- <div class="flex space-x-3 pt-4">
-                  <button class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                    View Details
-                  </button>
-                  <button class="bg-slate-200 text-slate-700 py-2 px-4 rounded-lg font-medium hover:bg-slate-300 transition-colors">
-                    <i data-lucide="message-circle" class="w-4 h-4"></i>
-                  </button>
-                </div> -->
-              </div>
-            </a>
-          </div>
-        <?php endforeach; ?>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 book-grid">
+        
       </div>
 
       <!-- Load More Button -->
       <div class="text-center mt-12 flex items-center justify-center">
-        <button class="bg-slate-200 text-slate-700 py-3 px-8 rounded-xl font-medium hover:bg-slate-300 transition-colors">
+        <button class="bg-slate-200 text-slate-700 py-3 px-8 rounded-xl font-medium hover:bg-slate-300 transition-colors prev-btn">
           previous
         </button>
-        <p><span class="mx-4 text-slate-600 font-medium">1</span>of<span class="mx-4 text-slate-600 font-medium">10</span></p>
-        <button class="bg-slate-200 text-slate-700 py-3 px-8 rounded-xl font-medium hover:bg-slate-300 transition-colors">
+        <p>
+          <span class="mx-4 text-slate-600 font-medium current-page">1</span>
+          of
+          <span class="mx-4 text-slate-600 font-medium total-pages">?</span>
+        </p>
+
+        <button class="bg-slate-200 text-slate-700 py-3 px-8 rounded-xl font-medium hover:bg-slate-300 transition-colors next-btn">
           next
         </button>
       </div>
@@ -187,33 +123,63 @@
 </div>
 
 <script>
-
-jQuery.noConflict();
   jQuery(document).ready(function () {
+    let currentPage = 1;
+    const limit = 6;
+    let totalPages = 1;
 
-    jQuery(".img-group").each(function () {
-      const container = jQuery(this);
-      const imgs = container.find(".sub-img").map(function () {
-        return jQuery(this).attr("src");
-      }).get();
+    function loadBooks(page) {
+      const offset = (page - 1) * limit;
 
-      if (imgs.length <= 1) return; 
+      jQuery('.book-grid').html('<div class="text-center py-12">Loading...</div>');
 
-      let index = 0;
-      const mainImg = container.find(".main-img");
+      jQuery.ajax({
+        url: '<?= BASE_URL ?>/browse',
+        method: 'POST',
+        data: { limit: limit, offset: offset },
+        success: function (response) {
+          jQuery('.book-grid').html(response);
+          jQuery('.current-page').text(page);
 
-      console.log(imgs);
+          // Show/hide pagination buttons
+          jQuery('.prev-btn').toggle(page > 1);
+          jQuery('.next-btn').toggle(page < totalPages);
+        },
+        error: function () {
+          alert('Failed to load books');
+        }
+      });
+    }
 
-
-      //mainImg.attr("src", imgs[0]);
-
-      setInterval(() => {
-        index = (index + 1) % imgs.length;
-        mainImg.attr("src", imgs[index]);
-      }, 2000);
+    // Get total book count
+    jQuery.ajax({
+      url: '<?= BASE_URL ?>/count',
+      method: 'POST', 
+      success: function (response) {
+        const bookCount = parseInt(response.count); 
+        totalPages = Math.ceil(bookCount / limit);
+        jQuery('.current-page').text(currentPage);
+        jQuery('.total-pages').text(totalPages);
+        loadBooks(currentPage);
+      },
+      error: function () {
+        alert('Failed to count books');
+      }
     });
 
+
+    jQuery('.next-btn').click(function () {
+      if (currentPage < totalPages) {
+        currentPage++;
+        loadBooks(currentPage);
+      }
+    });
+
+    jQuery('.prev-btn').click(function () {
+      if (currentPage > 1) {
+        currentPage--;
+        loadBooks(currentPage);
+      }
+    });
   });
 </script>
-
-
