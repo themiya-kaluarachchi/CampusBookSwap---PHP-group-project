@@ -76,34 +76,43 @@ require_once __DIR__ . '/../models/Book.php';
   }
 
   // Browse books
-public function browse() {
+    public function browse() {
 
-    $limit = isset($_POST['limit']) ? (int)$_POST['limit'] : 6;
-    $offset = isset($_POST['offset']) ? (int)$_POST['offset'] : 0;
-    $category  = isset($_POST['category']) ? $_POST['category'] : [];
-    $condition  = isset($_POST['condition']) ? $_POST['condition'] : [];
-    $search  = isset($_POST['search']) ? $_POST['search'] : '';
-    $sort = isset($_POST['sort']) ? $_POST['sort'] : '';
+        $limit = isset($_POST['limit']) ? (int)$_POST['limit'] : 6;
+        $offset = isset($_POST['offset']) ? (int)$_POST['offset'] : 0;
+        $category  = isset($_POST['category']) ? $_POST['category'] : [];
+        $condition  = isset($_POST['condition']) ? $_POST['condition'] : [];
+        $search  = isset($_POST['search']) ? $_POST['search'] : '';
+        $sort = isset($_POST['sort']) ? $_POST['sort'] : '';
 
-    $books = $this->bookModel->getAllWithImages($limit, $offset,$category,$condition,$search,$sort);
+        $books = $this->bookModel->getAllWithImages($limit, $offset,$category,$condition,$search,$sort);
 
-    if (
-        !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
-    ) {
-        require __DIR__ . '/../views/partials/bookGrid.php';
-        return;
+        if (
+            !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
+        ) {
+            require __DIR__ . '/../views/partials/bookGrid.php';
+            return;
+        }
+
+        require __DIR__ . '/../views/books/browse.php';
     }
 
-    require __DIR__ . '/../views/books/browse.php';
-}
+    public function count(){
 
-public function count(){
+        header('Content-Type: application/json');
+        $count = $this->bookModel->getNumberOfBooks();
+        echo json_encode(['count' => $count]);
+        exit;
+    }
 
-    header('Content-Type: application/json');
-    $count = $this->bookModel->getNumberOfBooks();
-    echo json_encode(['count' => $count]);
-    exit;
-}
+    public function findByIdWithImages(){
+        
+        $id = $_POST['id'] ?? 0;
+        $book = $this->bookModel->findByIdWithImages($id);
+        header('Content-Type: application/json');
+        echo json_encode($book);
+        exit;
+    }
 
   }

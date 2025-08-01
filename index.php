@@ -26,6 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isAjax) {
         case 'count':
             $bookController->count();
             break;
+        case 'book_details':
+            $bookController->findByIdWithImages();
+            break;
        
     }
     exit; 
