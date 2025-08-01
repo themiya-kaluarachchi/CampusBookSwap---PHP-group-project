@@ -1,5 +1,18 @@
 <?php
-  $bookId = (int)($_GET['id'] ?? 0);
+ $bookId = $_GET['book_id'] ?? 0;
+
+require_once __DIR__ . '/../../models/Book.php';
+$db = Database::getInstance()->getConnection();
+$bookModel = new Book($db);
+
+$book = $bookModel->findByIdWithImages($bookId);
+
+$createdAt = new DateTime($book['created_at']);
+$now = new DateTime();
+
+$interval = $createdAt->diff($now);
+$daysAgo = $interval->days;
+
 ?>
 
 <div class="font-sans text-gray-800 bg-gray-50">
@@ -14,26 +27,29 @@
           <div>
             <img src="b1.jpg" alt="Main book cover" class="w-full h-64 object-cover rounded-lg shadow-md mb-4" id="main-img">
             <div class="grid grid-cols-4 gap-4">
-              <img src="<?= BASE_URL ?>/assets/images/books/b1.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
+               <?php foreach ($book['images'] as $img): ?>
+                  <img src="../<?= htmlspecialchars($img) ?>" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
+               <?php endforeach; ?>
+             <!--  <img src="<?= BASE_URL ?>/assets/images/books/b1.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
               <img src="<?= BASE_URL ?>/assets/images/books/b2.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
               <img src="<?= BASE_URL ?>/assets/images/books/b1.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
-              <img src="<?= BASE_URL ?>/assets/images/books/b2.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img">
+              <img src="<?= BASE_URL ?>/assets/images/books/b2.jpg" alt="Book thumbnail" class="object-cover rounded-lg shadow-md mb-4 cursor-pointer sub-img"> -->
             </div>
           </div>
 
           <div>
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="bg-black text-white text-xs px-2 py-1 rounded">Available</span>
-              <span class="text-sm text-gray-500">Textbooks</span>
+              <span class="text-sm text-gray-500"><? ?></span>
             </div>
 
             <h1 class="text-2xl font-bold mt-4">Introduction to Algorithms</h1>
-            <p class="text-gray-600 mt-1">by Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein</p>
+            <p class="text-gray-600 mt-1">by <?= htmlspecialchars($book['author']) ?></p>
 
             <div class="flex flex-wrap items-center gap-4 mt-4">
-              <span class="text-blue-600 text-3xl font-bold">$45</span>
-              <span class="line-through text-gray-400">$89</span>
-              <span class="bg-gray-200 text-xs px-2 py-1 rounded">Like New</span>
+              <span class="text-blue-600 text-3xl font-bold"><?= htmlspecialchars($book['price'])==0.00 ? 'FREE' : 'Rs: ' . $book['price'] ?></span>
+              <!-- <span class="line-through text-gray-400">$89</span> -->
+              <span class="bg-gray-200 text-xs px-2 py-1 rounded"><?= htmlspecialchars($book['book_condition']) ?></span>
             </div>
 
             <div class="flex flex-wrap items-center text-gray-500 text-sm mt-2 gap-4">
@@ -50,7 +66,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 6v6l4 2m4-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                Posted 2 days ago
+                <?=htmlspecialchars($daysAgo . ' day' . ($daysAgo !== 1 ? 's' : '') . ' ago') ?>
               </span>
             </div>
 
@@ -84,21 +100,21 @@
         <section class="mt-6 space-y-4 border border-gray-200 p-4 rounded-lg bg-white">
           <h2 class="text-lg font-semibold mb-2">Description</h2>
           <p class="text-gray-700 text-sm leading-relaxed">
-            This comprehensive textbook covers a broad range of algorithms in depth, yet makes their design and analysis accessible to all levels of readers...
+            <?= htmlspecialchars($book['description']) ?>
           </p>
         </section>
 
         <div class="mt-6 space-y-4 border border-gray-200 p-4 rounded-lg bg-white">
           <h2 class="text-lg font-semibold mb-2">Book Information</h2>
           <div class="grid grid-cols-2 gap-6 text-sm text-gray-700">
-            <p class="flex justify-between"><strong>ISBN:</strong> 978-0262033848</p>
-            <p class="flex justify-between"><strong>Pages:</strong> 1312</p>
-            <p class="flex justify-between"><strong>Edition:</strong> 3rd Edition</p>
-            <p class="flex justify-between"><strong>Weight:</strong> 3.2 lbs</p>
-            <p class="flex justify-between"><strong>Publisher:</strong> MIT Press</p>
-            <p class="flex justify-between"><strong>Dimensions:</strong> 9.2 x 7.5 x 2.2 inches</p>
-            <p class="flex justify-between"><strong>Language:</strong> English</p>
-            <p class="flex justify-between"><strong>Condition:</strong> Like New</p>
+            <p class="flex justify-between"><strong>ISBN:</strong> <?= htmlspecialchars(!empty($book['isbn']) ? $book['isbn'] : '-') ?></p>
+            <p class="flex justify-between"><strong>Pages:</strong><?= htmlspecialchars(!empty($book['pages']) ? $book['pages'] : '-') ?></p>
+            <p class="flex justify-between"><strong>Edition:</strong> <?= htmlspecialchars(!empty($book['edition']) ? $book['edition'] : '-') ?></p>
+            <p class="flex justify-between"><strong>Weight:</strong> <?= htmlspecialchars(!empty($book['weight']) ? $book['weight'] : '-') ?></p>
+            <p class="flex justify-between"><strong>Publisher:</strong> <?= htmlspecialchars(!empty($book['publisher']) ? $book['publisher'] : '-') ?></p>
+            <p class="flex justify-between"><strong>Dimensions:</strong> <?= htmlspecialchars(!empty($book['dimensions']) ? $book['dimensions'] : '-') ?></p>
+            <p class="flex justify-between"><strong>Language:</strong> <?= htmlspecialchars(!empty($book['language']) ? $book['language'] : '-') ?></p>
+            <p class="flex justify-between"><strong>Condition:</strong> <?= htmlspecialchars(!empty($book['book_condition']) ? $book['book_condition'] : '-') ?></p>
           </div>
         </div>
       </div>

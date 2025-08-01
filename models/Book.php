@@ -123,12 +123,32 @@ class Book {
 
 
     // Find book by ID
-    public function findById($id) {
-        $stmt = $this->conn->prepare("SELECT * FROM books WHERE id = ?");
+    public function findByIdWithImages($id) {
+        $id = (int)$id;
+        $stmt = $this->conn->prepare("
+            SELECT b.*, bi.image_path
+            FROM books b
+            LEFT JOIN book_images bi ON b.id = bi.book_id
+            WHERE b.id = ?
+        ");
         $stmt->bind_param('i', $id);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        $result = $stmt->get_result();
+
+        $book = null;
+        while ($row = $result->fetch_assoc()) {
+            if (!$book) {
+                $book = $row;
+                $book['images'] = [];
+            }
+            if (!empty($row['image_path'])) {
+                $book['images'][] = $row['image_path'];
+            }
+        }
+
+        return $book;
     }
+
 
     // Delete book by ID
     public function deleteById($id) {
