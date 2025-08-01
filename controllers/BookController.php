@@ -115,4 +115,12 @@ require_once __DIR__ . '/../models/Book.php';
         exit;
     }
 
+   public function userBooks() {
+        require __DIR__ . '/../views/partials/user_profile/bookListing.php';
+    }
+
+    public function userFavorites(){
+        require __DIR__ . '/../views/partials/user_profile/favoriteListing.php';
+    }
+
   }

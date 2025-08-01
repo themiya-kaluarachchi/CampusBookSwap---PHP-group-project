@@ -29,6 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isAjax) {
         case 'book_details':
             $bookController->findByIdWithImages();
             break;
+        case 'my_listings':
+            $bookController->userBooks();
+            break;
+        case 'favorites':
+            $bookController->userFavorites();
+            break;
        
     }
     exit; 
@@ -64,12 +70,15 @@ switch ($page) {
     case 'logout':
         $authController->logout();
         break;
-    case 'profile':
+    /* case 'profile':
         if (isset($_SESSION['user_id'])) {
             $authController->profile($_SESSION['user_id']);
         } else {
             echo "Unauthorized.";
         }
+        break; */
+    case 'profile':
+        include 'views/dashboard/user_dashboard.php';
         break;
     case 'update_profile':
         $authController->updateProfile();
