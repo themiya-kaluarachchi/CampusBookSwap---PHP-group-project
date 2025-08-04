@@ -212,5 +212,25 @@ class Book {
         return $row['count'];
     }
 
+    public function addToFavorites($user_id, $book_id) {
+        $stmt = $this->conn->prepare("INSERT INTO favorites (user_id, book_id, created_at) VALUES (?, ?, NOW())");
+        $stmt->bind_param("ii", $user_id, $book_id);
+        return $stmt->execute();
+    }
+
+    public function removeFromFavorites($user_id, $book_id) {
+        $stmt = $this->conn->prepare("DELETE FROM favorites WHERE user_id = ? AND book_id = ?");
+        $stmt->bind_param("ii", $user_id, $book_id);
+        return $stmt->execute();
+    }
+
+    public function isFavourite($user_id, $book_id) {
+        $stmt = $this->conn->prepare("SELECT * FROM favorites WHERE user_id = ? AND book_id = ?");
+        $stmt->bind_param("ii", $user_id, $book_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->num_rows > 0;
+    }
+
 
 }
