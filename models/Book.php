@@ -146,7 +146,7 @@ class Book {
             }
         }
 
-        return $book;
+        return $book??[];
     }
 
 
