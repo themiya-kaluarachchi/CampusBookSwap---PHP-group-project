@@ -76,8 +76,7 @@ require_once __DIR__ . '/../models/Book.php';
   }
 
   // Browse books
-    public function browse() {
-
+   public function browse() {
         $limit = isset($_POST['limit']) ? (int)$_POST['limit'] : 6;
         $offset = isset($_POST['offset']) ? (int)$_POST['offset'] : 0;
         $category  = isset($_POST['category']) ? $_POST['category'] : [];
@@ -85,7 +84,14 @@ require_once __DIR__ . '/../models/Book.php';
         $search  = isset($_POST['search']) ? $_POST['search'] : '';
         $sort = isset($_POST['sort']) ? $_POST['sort'] : '';
 
-        $books = $this->bookModel->getAllWithImages($limit, $offset,$category,$condition,$search,$sort);
+        $books = $this->bookModel->getAllWithImages($limit, $offset, $category, $condition, $search, $sort);
+
+        $current_user_id = $_SESSION['user_id'] ?? null;
+        if ($current_user_id) {
+            foreach ($books as &$book) {
+                $book['is_favorited'] = $this->bookModel->isFavourite($current_user_id, $book['id']);
+            }
+        }
 
         if (
             !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
@@ -97,6 +103,7 @@ require_once __DIR__ . '/../models/Book.php';
 
         require __DIR__ . '/../views/books/browse.php';
     }
+
 
     public function count(){
 
@@ -122,5 +129,27 @@ require_once __DIR__ . '/../models/Book.php';
     public function userFavorites(){
         require __DIR__ . '/../views/partials/user_profile/favoriteListing.php';
     }
+
+   public function toggleFavourite() {
+    
+        $user_id = $_SESSION['user_id'] ?? null;
+        $book_id = $_POST['book_id'] ?? null;
+
+        if (!$user_id || !$book_id) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid request']);
+            return;
+        }
+
+        $isFav = $this->bookModel->isFavourite($user_id, $book_id);
+
+        if ($isFav) {
+            $this->bookModel->removeFromFavorites($user_id, $book_id);
+            echo json_encode(['status' => 'removed']);
+        } else {
+            $this->bookModel->addToFavorites($user_id, $book_id);
+            echo json_encode(['status' => 'added']);
+        }
+    }
+
 
   }
