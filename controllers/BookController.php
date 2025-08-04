@@ -123,7 +123,15 @@ require_once __DIR__ . '/../models/Book.php';
     }
 
    public function userBooks() {
-        require __DIR__ . '/../views/partials/user_profile/bookListing.php';
+        $user_id = $_SESSION['user_id'] ?? null;
+        $books = $this->bookModel->getBooksByUserId($user_id);
+        require __DIR__ . '/../views/partials/user_profile/userBookListing.php';
+    }
+
+    public function deleteBook(){
+        $id = $_POST['book_id'] ?? 0;
+        $this->bookModel->deleteById($id);
+        exit;
     }
 
     public function userFavorites(){
@@ -150,6 +158,8 @@ require_once __DIR__ . '/../models/Book.php';
             echo json_encode(['status' => 'added']);
         }
     }
+
+
 
 
   }

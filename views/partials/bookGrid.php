@@ -3,16 +3,18 @@
   <div class="group relative bg-white rounded-3xl overflow-hidden shadow-lg transition-all duration-500 transform" data-aos="fade-up" data-aos-delay="<?= $index * 100 ?>">
 
     <!-- Favourite Button -->
-    <button 
-      class="fav-btn absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
-      data-book-id="<?= $book['id'] ?>" 
-      data-fav="<?= $book['is_favorited'] ? '1' : '0' ?>"
-    >
-      <i 
-        data-lucide="heart" 
-        class="heart-icon w-5 h-5 transition-all <?= $book['is_favorited'] ? 'text-red-500 fill-red-500' : 'text-slate-400' ?>"
-      ></i>
-    </button>
+    <?php if (isset($_SESSION['user_id'])): ?>
+      <button 
+        class="fav-btn absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
+        data-book-id="<?= $book['id'] ?>" 
+        data-fav="<?= $book['is_favorited'] ? '1' : '0' ?>"
+      >
+        <i 
+          data-lucide="heart" 
+          class="heart-icon w-5 h-5 transition-all <?= $book['is_favorited'] ? 'text-red-500 fill-red-500' : 'text-slate-400' ?>"
+        ></i>
+      </button>
+    <?php endif; ?>
     
     <!-- Book Image -->
     <div class="img-group">

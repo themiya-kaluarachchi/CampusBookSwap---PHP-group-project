@@ -152,10 +152,19 @@ class Book {
 
     // Delete book by ID
     public function deleteById($id) {
-        $stmt = $this->conn->prepare("DELETE FROM books WHERE id = ?");
-        $stmt->bind_param('i', $id);
-        return $stmt->execute();
+        $user_id = $_SESSION['user_id'] ?? 0;
+
+        $stmt = $this->conn->prepare("DELETE FROM books WHERE id = ? AND user_id = ?");
+        $stmt->bind_param("ii", $id, $user_id);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Unauthorized or book not found.']);
+        }
     }
+
 
     // Update book by ID
     public function updateById($id, $data) {
@@ -212,6 +221,14 @@ class Book {
         return $row['count'];
     }
 
+    public function getBooksByUserId($user_id) {
+        $stmt = $this->conn->prepare("SELECT * FROM books WHERE user_id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
     public function addToFavorites($user_id, $book_id) {
         $stmt = $this->conn->prepare("INSERT INTO favorites (user_id, book_id, created_at) VALUES (?, ?, NOW())");
         $stmt->bind_param("ii", $user_id, $book_id);
@@ -232,5 +249,10 @@ class Book {
         return $result->num_rows > 0;
     }
 
-
+    public function findByUserIdFavBooks($user_id) {
+        $stmt = $this->conn->prepare("SELECT * FROM books WHERE id IN (SELECT book_id FROM favorites WHERE user_id = ?)");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
 }

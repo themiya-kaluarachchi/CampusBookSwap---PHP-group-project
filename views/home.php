@@ -73,7 +73,7 @@
         </div>
 
         <!-- Stats -->
-        <div class="grid grid-cols-3 gap-8 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="600">
+        <!-- <div class="grid grid-cols-3 gap-8 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="600">
           <div class="text-center">
             <div class="text-2xl font-bold text-white drop-shadow-lg">5K+</div>
             <div class="text-sm text-blue-200">Students</div>
@@ -86,7 +86,7 @@
             <div class="text-2xl font-bold text-white drop-shadow-lg">$500K+</div>
             <div class="text-sm text-blue-200">Saved</div>
           </div>
-        </div> 
+        </div>  -->
       </div>
     </div>
   </section>

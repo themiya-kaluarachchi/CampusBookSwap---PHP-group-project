@@ -108,8 +108,10 @@ class AuthController {
     // Logout
     public function logout() {
         session_destroy();
-        header('Location: /');
+        header('Location: ' . BASE_URL . '/login');
+        exit(); 
     }
+
 
     // View profile
     public function profile($id) {
