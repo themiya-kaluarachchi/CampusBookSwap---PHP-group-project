@@ -89,9 +89,13 @@ switch ($page) {
     case 'update_profile':
         $authController->updateProfile();
         break;
-/*     case 'count':
-        $bookController->count();
-        break; */
+    case 'edit_book':
+        if ($param) $_GET['book_id'] = $param;
+        $bookController->editBook();
+        break;
+    case 'edit_a_book':
+        $bookController->editABook();
+        break;
     default:
         include 'views/404.php';
         break;

@@ -161,5 +161,78 @@ require_once __DIR__ . '/../models/Book.php';
         }
     }
 
+    public function editBook(){
+        $bookId = $_GET['book_id'] ?? $_POST['book_id'] ?? null;
+        if (!$bookId) {
+            echo "Book ID not provided.";
+            return;
+        }
+
+        $book = $this->bookModel->findByIdWithImages($bookId);
+        require __DIR__ . '/../views/books/editABook.php';
+    }
+
+    public function editABook()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $bookId = $_POST['book_id'] ?? null;
+
+            if (!$bookId) {
+                echo "Book ID not provided.";
+                return;
+            }
+
+            $title = trim($_POST['title'] ?? '');
+            $author = trim($_POST['author'] ?? '');
+            $category = $_POST['category'] ?? '';
+            $book_condition = $_POST['book_condition'] ?? '';
+            $isFree = isset($_POST['isFree']);
+            $price = $isFree ? 0 : trim($_POST['price'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $isbn = trim($_POST['isbn'] ?? '');
+            $pages = trim($_POST['pages'] ?? '');
+            $edition = trim($_POST['edition'] ?? '');
+            $weight = trim($_POST['weight'] ?? '');
+            $publisher = trim($_POST['publisher'] ?? '');
+            $dimensions = trim($_POST['dimensions'] ?? '');
+            $language = trim($_POST['language'] ?? '');
+
+            $userId = $_SESSION['user_id'] ?? null;
+            if (!$userId) {
+                echo "User not authenticated.";
+                return;
+            }
+
+            $book = [
+                'title' => $title,
+                'author' => $author,
+                'category' => $category,
+                'book_condition' => $book_condition,
+                'price' => $price,
+                'description' => $description,
+                'isbn' => $isbn,
+                'pages' => $pages,
+                'edition' => $edition,
+                'weight' => $weight,
+                'publisher' => $publisher,
+                'dimensions' => $dimensions,
+                'language' => $language,
+                'user_id' => $userId
+            ];
+
+            if ($this->bookModel->updateById($bookId, $book)) {
+                header('Location: ' . BASE_URL . '/profile');
+                exit;
+            } else {
+                echo "Failed to update book.";
+                require __DIR__ . '/../views/books/editABook.php';
+            }
+        } else {
+            echo "Invalid request method.";
+        }
+    }
+
+
+
 
 }
