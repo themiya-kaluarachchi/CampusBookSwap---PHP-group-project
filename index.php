@@ -38,7 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isAjax) {
         case 'toggle_favourite':
             $bookController->toggleFavourite();
             break;
-        case 'remove_favorite':
+        case 'delete_book':
+            if ($param) $_GET['id'] = $param;
+            $bookController->deleteBook();
+            break;
     }
     exit; 
 }
