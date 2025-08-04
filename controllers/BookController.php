@@ -135,6 +135,8 @@ require_once __DIR__ . '/../models/Book.php';
     }
 
     public function userFavorites(){
+        $user_id = $_SESSION['user_id'] ?? null;
+        $favoriteBooks = $this->bookModel->getFavouriteBooksWithImages($user_id);
         require __DIR__ . '/../views/partials/user_profile/favoriteListing.php';
     }
 
@@ -160,6 +162,4 @@ require_once __DIR__ . '/../models/Book.php';
     }
 
 
-
-
-  }
+}

@@ -249,10 +249,36 @@ class Book {
         return $result->num_rows > 0;
     }
 
-    public function findByUserIdFavBooks($user_id) {
-        $stmt = $this->conn->prepare("SELECT * FROM books WHERE id IN (SELECT book_id FROM favorites WHERE user_id = ?)");
+
+    public function getFavouriteBooksWithImages($user_id) {
+        $stmt = $this->conn->prepare("
+            SELECT b.*, bi.image_path
+            FROM books b
+            JOIN favorites f ON b.id = f.book_id
+            LEFT JOIN book_images bi ON b.id = bi.book_id
+            WHERE f.user_id = ?
+            ORDER BY f.created_at DESC
+        ");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+
+        $books = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $bookId = $row['id'];
+
+            if (!isset($books[$bookId])) {
+                $books[$bookId] = $row;
+                $books[$bookId]['images'] = [];
+            }
+
+            if (!empty($row['image_path'])) {
+                $books[$bookId]['images'][] = $row['image_path'];
+            }
+        }
+
+        return array_values($books);
     }
+
 }
