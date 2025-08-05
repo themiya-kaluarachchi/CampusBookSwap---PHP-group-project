@@ -12,13 +12,13 @@ class Book {
             INSERT INTO books (
                 user_id, title, author, price, category, book_condition, description, isbn,
                 pages, edition, publisher, dimensions, language, image_path,
-                weight, views, created_at, update_at
+                weight, views,status, created_at, update_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NULL)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, NOW(), NULL)
         ");
 
         $stmt->bind_param(
-            "issdssssisssssdi",
+            "issdssssisssssdis",
             $data['user_id'],
             $data['title'],
             $data['author'],
@@ -34,7 +34,8 @@ class Book {
             $data['language'],
             $data['image_path'],
             $data['weight'],   
-            $data['views']
+            $data['views'],
+            $data['status']
         );
 
         return $stmt->execute();

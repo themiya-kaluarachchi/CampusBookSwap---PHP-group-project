@@ -2,9 +2,11 @@
 <div class="bg-white rounded-xl shadow-sm border border-gray-200">
     <div class="flex items-center justify-between p-6 border-b border-gray-200">
         <h2 class="text-xl font-semibold text-gray-900">My Listings</h2>
-        <button class="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg font-medium">
-            Add New Listing
-        </button>
+        <a href="<?= BASE_URL ?>/add_a_book">
+            <button class="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg font-medium">
+                Add New Listing
+            </button>
+        </a>
     </div>
     <div class="divide-y divide-gray-200">
 

@@ -5,11 +5,18 @@
         <div class="p-6 border-b border-gray-200">
             <div class="flex items-center space-x-4">
                 <div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
-                    <span class="text-gray-600 font-medium">SM</span>
+                    <span class="text-gray-600 font-medium"><?php echo substr($_SESSION['fname'], 0, 1); ?></span>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-gray-900">Sarah Martinez</h3>
-                    <p class="text-sm text-gray-500">sarah.m@university.edu</p>
+                    <h3 class="font-semibold text-gray-900">
+                        <span class="text-blue-600">
+                             <?php echo $_SESSION['fname'] . ' ' . $_SESSION['lname']; ?>
+                        </span>
+                    </h3>
+                    <p class="text-sm text-gray-500">
+                        <?php echo $_SESSION['email']; ?>
+                    </p>
+
                 </div>
             </div>
         </div>

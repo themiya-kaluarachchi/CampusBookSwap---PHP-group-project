@@ -39,11 +39,12 @@ $daysAgo = $interval->days;
 
           <div>
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="bg-black text-white text-xs px-2 py-1 rounded">Available</span>
+              <span class="bg-black text-white text-xs px-2 py-1 rounded">
+                <?= htmlspecialchars($book['status'])?></span>
               <span class="text-sm text-gray-500"><? ?></span>
             </div>
 
-            <h1 class="text-2xl font-bold mt-4">Introduction to Algorithms</h1>
+            <h1 class="text-2xl font-bold mt-4"><?= htmlspecialchars($book['title']) ?></h1>
             <p class="text-gray-600 mt-1">by <?= htmlspecialchars($book['author']) ?></p>
 
             <div class="flex flex-wrap items-center gap-4 mt-4">
@@ -122,7 +123,7 @@ $daysAgo = $interval->days;
       <!-- Sidebar Section -->
       <div class="space-y-6">
 
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <!-- <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h2 class="text-xl font-semibold mb-2">Seller Information</h2>
           <div class="flex items-center space-x-3">
             <img src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full bg-gray-200" />
@@ -171,7 +172,7 @@ $daysAgo = $interval->days;
             <p><strong>3</strong> Active Listings</p>
           </div>
           <button class="mt-3 border border-gray-300 hover:border-gray-400 w-full rounded px-3 py-2 text-sm">👤 View Profile</button>
-        </div>
+        </div> -->
 
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h2 class="text-lg font-semibold inline-flex gap-2">
@@ -230,7 +231,7 @@ $daysAgo = $interval->days;
           </ul>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <!-- <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h2 class="text-lg font-semibold pb-4">Similar Books</h2>
           <div class="grid grid-cols gap-2">
             <div class="bg-white p-2 rounded-lg shadow-sm grid grid-cols-2 md:grid-cols-3 gap-2 border border-gray-200">
@@ -269,7 +270,7 @@ $daysAgo = $interval->days;
               </span>
             </div>
           </div>
-        </div>
+        </div> -->
 
       </div>
 
