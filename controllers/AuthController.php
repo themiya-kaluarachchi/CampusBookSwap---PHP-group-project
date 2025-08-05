@@ -88,6 +88,7 @@ class AuthController {
             if ($user) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['fname'] = $user['fname'];
+                $_SESSION['lname'] = $user['lname'];
                 $_SESSION['email'] = $user['email'];
                 echo json_encode(['success' => true, 'message' => 'Login successful.']);
 

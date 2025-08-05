@@ -28,7 +28,7 @@ require_once __DIR__ . '/../models/Book.php';
         $publisher = trim($_POST['publisher'] ?? '');
         $dimensions = trim($_POST['dimensions'] ?? '');
         $language = trim($_POST['language'] ?? '');
-
+        $status = $_POST['status'] ?? 'Available';
         $userId = $_SESSION['user_id'];
         $views = 0;
 
@@ -36,7 +36,7 @@ require_once __DIR__ . '/../models/Book.php';
         $bookData = compact(
             'userId', 'title', 'author', 'price', 'category', 'book_condition',
             'description', 'isbn', 'pages', 'edition', 'publisher', 'dimensions',
-            'language', 'weight', 'views'
+            'language', 'weight', 'views','status'
         );
         $bookData['image_path'] = ''; 
         $bookData['user_id'] = $userId;
